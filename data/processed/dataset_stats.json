@@ -1,0 +1,72 @@
+{
+  "dataset": "takala/financial_phrasebank",
+  "config": "sentences_66agree",
+  "random_seed": 42,
+  "label_map": {
+    "0": "negative",
+    "1": "neutral",
+    "2": "positive"
+  },
+  "total_samples_raw": 4217,
+  "total_samples_clean": 4211,
+  "rows_removed_by_cleaning": 6,
+  "class_counts": {
+    "negative": 514,
+    "neutral": 2529,
+    "positive": 1168
+  },
+  "class_percentages": {
+    "negative": 12.21,
+    "neutral": 60.06,
+    "positive": 27.74
+  },
+  "majority_class": "neutral",
+  "majority_class_baseline_accuracy": 0.6006,
+  "majority_class_baseline_accuracy_test_split": 0.6013,
+  "split_ratios": {
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15
+  },
+  "split_sizes": {
+    "train": 2947,
+    "val": 632,
+    "test": 632
+  },
+  "split_class_counts": {
+    "train": {
+      "negative": 360,
+      "neutral": 1770,
+      "positive": 817
+    },
+    "val": {
+      "negative": 77,
+      "neutral": 379,
+      "positive": 176
+    },
+    "test": {
+      "negative": 77,
+      "neutral": 380,
+      "positive": 175
+    }
+  },
+  "text_length_clean": {
+    "characters": {
+      "min": 9,
+      "max": 315,
+      "mean": 127.13,
+      "median": 119.0
+    },
+    "whitespace_tokens": {
+      "min": 2,
+      "max": 81,
+      "mean": 23.01,
+      "median": 21.0
+    }
+  },
+  "data_quality": {
+    "rows_with_non_ascii": 102,
+    "rows_with_mojibake_pattern": 86,
+    "mojibake_note": "Upstream corruption in Sentences_66Agree.txt: some Nordic characters stored as '+' plus a Latin-1 byte. Not fixed."
+  }
+}

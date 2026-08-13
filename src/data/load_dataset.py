@@ -281,6 +281,15 @@ def save(splits: dict[str, pd.DataFrame], raw: pd.DataFrame, cleaned: pd.DataFra
     _, test_baseline = majority_baseline_accuracy(splits["test"])
     distribution = class_distribution(cleaned)
 
+    chars = cleaned["text"].str.len()
+    tokens = cleaned["text"].str.split().str.len()
+
+    # The upstream Sentences_*.txt files carry pre-existing corruption: some
+    # Nordic characters are stored as '+' followed by a Latin-1 byte
+    # (e.g. 'L+\xf1nnen' for 'Lannen'). Counted here so the scale is on record.
+    non_ascii = cleaned["text"].str.contains(r"[^\x00-\x7F]", regex=True)
+    mojibake = cleaned["text"].str.contains(r"\+[^\x00-\x7F]", regex=True)
+
     stats = {
         "dataset": config.DATASET_NAME,
         "config": config.DATASET_CONFIG,
@@ -303,6 +312,28 @@ def save(splits: dict[str, pd.DataFrame], raw: pd.DataFrame, cleaned: pd.DataFra
         "split_class_counts": {
             name: class_distribution(part)["count"].astype(int).to_dict()
             for name, part in splits.items()
+        },
+        "text_length_clean": {
+            "characters": {
+                "min": int(chars.min()),
+                "max": int(chars.max()),
+                "mean": round(float(chars.mean()), 2),
+                "median": float(chars.median()),
+            },
+            "whitespace_tokens": {
+                "min": int(tokens.min()),
+                "max": int(tokens.max()),
+                "mean": round(float(tokens.mean()), 2),
+                "median": float(tokens.median()),
+            },
+        },
+        "data_quality": {
+            "rows_with_non_ascii": int(non_ascii.sum()),
+            "rows_with_mojibake_pattern": int(mojibake.sum()),
+            "mojibake_note": (
+                "Upstream corruption in Sentences_66Agree.txt: some Nordic "
+                "characters stored as '+' plus a Latin-1 byte. Not fixed."
+            ),
         },
     }
 

@@ -17,6 +17,8 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
+MODELS_DIR = PROJECT_ROOT / "models"      # gitignored: binaries
+RESULTS_DIR = PROJECT_ROOT / "results"    # committed: metrics JSON
 
 # Dataset
 DATASET_NAME = "takala/financial_phrasebank"

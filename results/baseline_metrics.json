@@ -1,0 +1,358 @@
+{
+  "phase": "2-baseline",
+  "evaluated_on": "val",
+  "random_seed": 42,
+  "label_map": {
+    "0": "negative",
+    "1": "neutral",
+    "2": "positive"
+  },
+  "train_size": 2947,
+  "val_size": 632,
+  "tfidf_vocabulary_size": 9717,
+  "vectorizer_params": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "min_df": 2,
+    "sublinear_tf": true,
+    "strip_accents": "unicode",
+    "lowercase": true
+  },
+  "classifier_params": {
+    "max_iter": 2000,
+    "random_state": 42
+  },
+  "metrics": {
+    "dummy_most_frequent": {
+      "accuracy": 0.5997,
+      "macro_f1": 0.2499,
+      "weighted_f1": 0.4496,
+      "per_class": {
+        "negative": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 77.0
+        },
+        "neutral": {
+          "precision": 0.5997,
+          "recall": 1.0,
+          "f1-score": 0.7498,
+          "support": 379.0
+        },
+        "positive": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 176.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          0,
+          77,
+          0
+        ],
+        [
+          0,
+          379,
+          0
+        ],
+        [
+          0,
+          176,
+          0
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ]
+    },
+    "tfidf_logreg_unweighted": {
+      "accuracy": 0.7753,
+      "macro_f1": 0.6515,
+      "weighted_f1": 0.7507,
+      "per_class": {
+        "negative": {
+          "precision": 0.8,
+          "recall": 0.3117,
+          "f1-score": 0.4486,
+          "support": 77.0
+        },
+        "neutral": {
+          "precision": 0.7708,
+          "recall": 0.9763,
+          "f1-score": 0.8615,
+          "support": 379.0
+        },
+        "positive": {
+          "precision": 0.7869,
+          "recall": 0.5455,
+          "f1-score": 0.6443,
+          "support": 176.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          24,
+          33,
+          20
+        ],
+        [
+          3,
+          370,
+          6
+        ],
+        [
+          3,
+          77,
+          96
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ]
+    },
+    "tfidf_logreg_balanced": {
+      "accuracy": 0.7911,
+      "macro_f1": 0.7326,
+      "weighted_f1": 0.7905,
+      "per_class": {
+        "negative": {
+          "precision": 0.6024,
+          "recall": 0.6494,
+          "f1-score": 0.625,
+          "support": 77.0
+        },
+        "neutral": {
+          "precision": 0.8505,
+          "recall": 0.8707,
+          "f1-score": 0.8605,
+          "support": 379.0
+        },
+        "positive": {
+          "precision": 0.7453,
+          "recall": 0.6818,
+          "f1-score": 0.7122,
+          "support": 176.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          50,
+          15,
+          12
+        ],
+        [
+          20,
+          330,
+          29
+        ],
+        [
+          13,
+          43,
+          120
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ]
+    }
+  },
+  "top_features_balanced": {
+    "negative": [
+      {
+        "ngram": "down",
+        "coef": 3.6146
+      },
+      {
+        "ngram": "decreased",
+        "coef": 3.1993
+      },
+      {
+        "ngram": "fell",
+        "coef": 2.6654
+      },
+      {
+        "ngram": "lower",
+        "coef": 1.9887
+      },
+      {
+        "ngram": "down from",
+        "coef": 1.822
+      },
+      {
+        "ngram": "decreased to",
+        "coef": 1.7719
+      },
+      {
+        "ngram": "staff",
+        "coef": 1.7449
+      },
+      {
+        "ngram": "off",
+        "coef": 1.6742
+      },
+      {
+        "ngram": "dropped",
+        "coef": 1.5769
+      },
+      {
+        "ngram": "declined",
+        "coef": 1.5465
+      },
+      {
+        "ngram": "lay",
+        "coef": 1.4048
+      },
+      {
+        "ngram": "loss",
+        "coef": 1.379
+      },
+      {
+        "ngram": "jobs",
+        "coef": 1.3515
+      },
+      {
+        "ngram": "than",
+        "coef": 1.3445
+      },
+      {
+        "ngram": "mn in",
+        "coef": 1.3407
+      }
+    ],
+    "neutral": [
+      {
+        "ngram": "is",
+        "coef": 2.4492
+      },
+      {
+        "ngram": "and",
+        "coef": 1.1183
+      },
+      {
+        "ngram": "includes",
+        "coef": 1.0847
+      },
+      {
+        "ngram": "approximately",
+        "coef": 1.0492
+      },
+      {
+        "ngram": "be",
+        "coef": 1.0284
+      },
+      {
+        "ngram": "include",
+        "coef": 0.9369
+      },
+      {
+        "ngram": "of the",
+        "coef": 0.9047
+      },
+      {
+        "ngram": "will be",
+        "coef": 0.8422
+      },
+      {
+        "ngram": "stake",
+        "coef": 0.7672
+      },
+      {
+        "ngram": "shares",
+        "coef": 0.7556
+      },
+      {
+        "ngram": "not",
+        "coef": 0.7508
+      },
+      {
+        "ngram": "sell",
+        "coef": 0.7505
+      },
+      {
+        "ngram": "no",
+        "coef": 0.7494
+      },
+      {
+        "ngram": "or",
+        "coef": 0.7341
+      },
+      {
+        "ngram": "value of",
+        "coef": 0.7325
+      }
+    ],
+    "positive": [
+      {
+        "ngram": "increased",
+        "coef": 2.2955
+      },
+      {
+        "ngram": "rose",
+        "coef": 2.2324
+      },
+      {
+        "ngram": "up",
+        "coef": 2.1649
+      },
+      {
+        "ngram": "increase",
+        "coef": 2.0874
+      },
+      {
+        "ngram": "up from",
+        "coef": 1.8798
+      },
+      {
+        "ngram": "rose to",
+        "coef": 1.7694
+      },
+      {
+        "ngram": "grew",
+        "coef": 1.7501
+      },
+      {
+        "ngram": "signed",
+        "coef": 1.7366
+      },
+      {
+        "ngram": "our",
+        "coef": 1.7226
+      },
+      {
+        "ngram": "to",
+        "coef": 1.5262
+      },
+      {
+        "ngram": "improved",
+        "coef": 1.469
+      },
+      {
+        "ngram": "growth",
+        "coef": 1.4199
+      },
+      {
+        "ngram": "year",
+        "coef": 1.3847
+      },
+      {
+        "ngram": "profit rose",
+        "coef": 1.272
+      },
+      {
+        "ngram": "awarded",
+        "coef": 1.2679
+      }
+    ]
+  }
+}

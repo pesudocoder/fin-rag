@@ -20,12 +20,16 @@ env/
 /data/processed/*
 !/data/raw/.gitkeep
 !/data/processed/.gitkeep
+# Evidence trail: small, and referenced by RESULTS.md
+!/data/processed/dataset_stats.json
 
-# Model checkpoints
+# Model checkpoints / serialized estimators
+models/
 *.pt
 *.bin
 *.safetensors
 *.ckpt
+*.joblib
 
 # FAISS / vector indexes
 *.faiss

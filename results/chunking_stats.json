@@ -1,0 +1,120 @@
+{
+  "phase": "4-chunking",
+  "chunk_size_tokens": 230,
+  "chunk_overlap_tokens": 50,
+  "length_function": "all-MiniLM-L6-v2 tokenizer (word pieces)",
+  "separators": [
+    "\n\n",
+    "\n",
+    ". ",
+    "? ",
+    "! ",
+    "; ",
+    ", ",
+    " ",
+    ""
+  ],
+  "embedding_max_tokens": 256,
+  "filings": [
+    {
+      "filing": "AAPL_10-K_2023.htm",
+      "raw_bytes": 1558924,
+      "extracted_chars": 199102,
+      "retained_pct": 12.77,
+      "chunks": 248
+    },
+    {
+      "filing": "AAPL_10-K_2024.htm",
+      "raw_bytes": 1503780,
+      "extracted_chars": 202839,
+      "retained_pct": 13.49,
+      "chunks": 252
+    },
+    {
+      "filing": "JPM_10-K_2023.htm",
+      "raw_bytes": 13211658,
+      "extracted_chars": 1214696,
+      "retained_pct": 9.19,
+      "chunks": 1519
+    },
+    {
+      "filing": "JPM_10-K_2024.htm",
+      "raw_bytes": 12849180,
+      "extracted_chars": 1190388,
+      "retained_pct": 9.26,
+      "chunks": 1494
+    },
+    {
+      "filing": "KO_10-K_2023.htm",
+      "raw_bytes": 4161309,
+      "extracted_chars": 591328,
+      "retained_pct": 14.21,
+      "chunks": 707
+    },
+    {
+      "filing": "KO_10-K_2024.htm",
+      "raw_bytes": 3930907,
+      "extracted_chars": 594410,
+      "retained_pct": 15.12,
+      "chunks": 724
+    },
+    {
+      "filing": "MSFT_10-K_2023.htm",
+      "raw_bytes": 9963591,
+      "extracted_chars": 333566,
+      "retained_pct": 3.35,
+      "chunks": 394
+    },
+    {
+      "filing": "MSFT_10-K_2024.htm",
+      "raw_bytes": 6860911,
+      "extracted_chars": 350817,
+      "retained_pct": 5.11,
+      "chunks": 413
+    }
+  ],
+  "totals": {
+    "filings": 8,
+    "raw_bytes": 54040260,
+    "extracted_chars": 4677146,
+    "retained_pct": 8.65
+  },
+  "token_length": {
+    "total_chunks": 5751,
+    "min": 2,
+    "max": 230,
+    "mean": 192.38,
+    "median": 210,
+    "p95": 230
+  },
+  "chunks_over_embedding_limit": 0,
+  "chunks_over_embedding_limit_pct": 0.0,
+  "tokens_lost_to_truncation": 0,
+  "embeddings": {
+    "phase": "4-embeddings",
+    "model": "all-MiniLM-L6-v2",
+    "local_no_api": true,
+    "vector_count": 5751,
+    "dimension": 384,
+    "dtype": "float32",
+    "normalized": true,
+    "array_bytes": 8833536,
+    "encoding_seconds": 203.04,
+    "chunks_per_second": 28.3,
+    "max_seq_length": 256,
+    "chunks_truncated_at_embed_time": 0,
+    "alignment": "row i of embeddings.npy == row i of metadata.parquet",
+    "sanity_check": {
+      "random_pair_mean_cosine": 0.2819,
+      "adjacent_chunk_mean_cosine": 0.6508,
+      "probe_top1_mean_cosine": 0.7397,
+      "offtopic_contrast_best_cosine": 0.2156,
+      "checks": {
+        "adjacent_above_random": true,
+        "probes_above_random": true,
+        "probes_above_contrast": true
+      },
+      "passed": true
+    }
+  }
+}

@@ -540,11 +540,270 @@ their distributions, which was not run.
 - **Training loss is not in the committed history file** (see the traceability
   note above); the notebook has been fixed to capture it on future runs.
 
-## Phase 4 — Document ingestion and chunking
+## Phase 4 — Document ingestion, chunking and embedding
 
-*Not started.*
+Sources: `results/chunking_stats.json` (extraction, chunking and embedding
+statistics), `data/raw/filings/manifest.json` (corpus provenance). Produced by
+`src/rag/fetch_filings.py`, `src/rag/chunk.py`, `src/rag/embed.py`.
 
-## Phase 5 — Embeddings and FAISS vector store
+No LLM API calls anywhere in this phase. Embedding runs locally.
+
+### Corpus
+
+8 filings, 4 companies, FY2023 and FY2024 10-Ks, 51.54 MB raw.
+
+| ticker | company | form | FY | filed | accession | size |
+|---|---|---|---|---|---|---|
+| AAPL | Apple Inc. | 10-K | 2023 | 2023-11-03 | 0000320193-23-000106 | 1.49 MB |
+| AAPL | Apple Inc. | 10-K | 2024 | 2024-11-01 | 0000320193-24-000123 | 1.43 MB |
+| JPM | JPMORGAN CHASE & CO | 10-K | 2023 | 2024-02-16 | 0000019617-24-000225 | 12.60 MB |
+| JPM | JPMORGAN CHASE & CO | 10-K | 2024 | 2025-02-14 | 0000019617-25-000270 | 12.25 MB |
+| KO | COCA COLA CO | 10-K | 2023 | 2024-02-20 | 0000021344-24-000009 | 3.97 MB |
+| KO | COCA COLA CO | 10-K | 2024 | 2025-02-20 | 0000021344-25-000011 | 3.75 MB |
+| MSFT | MICROSOFT CORP | 10-K | 2023 | 2023-07-27 | 0000950170-23-035122 | 9.50 MB |
+| MSFT | MICROSOFT CORP | 10-K | 2024 | 2024-07-30 | 0000950170-24-087843 | 6.54 MB |
+
+`data/raw/filings/manifest.json` is the provenance record and is committed;
+the filings themselves are gitignored. It carries ticker, company, form type,
+fiscal year, filing date, report date, accession number, CIK, source URL, local
+filename and byte size for every document, so the corpus is reconstructable from
+the repository without shipping 51 MB of HTML.
+
+SEC access rules were honoured: a User-Agent declaring a real contact address
+(EDGAR returns 403 without one) and a 0.5 s inter-request delay — 2 requests/second
+against their 10/second fair-access cap.
+
+### Two acquisition problems that had to be solved
+
+**JPM returned zero filings on the first run.** The EDGAR submissions endpoint
+caps its inline `filings.recent` block at roughly the last 1,000 submissions and
+pages everything older into `filings.files`. For most companies 1,000 filings
+covers many years. JPMorgan files hundreds of prospectuses and 8-Ks a year, so
+`recent` reached back only a few months and did not contain the annual report at
+all. The fix was to follow the `filings.files` pages and concatenate them before
+filtering. **This fails silently** — the API returns HTTP 200 with a well-formed
+response that simply lacks the 10-K, so the only symptom was an empty result for
+one company. Any high-volume filer added to `FILING_TARGETS` later would have hit
+the same wall.
+
+**Fiscal year is keyed on `reportDate`, not `filingDate`.** A 10-K is filed after
+the period it covers, sometimes months after. KO's FY2024 10-K was filed
+**2025-02-20**, and JPM's FY2024 10-K on **2025-02-14**. Keying on the filing date
+would have labelled both as FY2025 — producing files named `KO_10-K_2025.htm`
+containing FY2024 data, and mismatching the requested `fiscal_years` so they would
+not have been fetched at all. Every citation in Phase 6 inherits this field, so the
+error would have propagated into user-facing output.
+
+### Text extraction
+
+| filing | raw | extracted chars | retained | chunks |
+|---|---|---|---|---|
+| AAPL_10-K_2023 | 1,558,924 B | 199,102 | 12.77% | 248 |
+| AAPL_10-K_2024 | 1,503,780 B | 202,839 | 13.49% | 252 |
+| JPM_10-K_2023 | 13,211,658 B | 1,214,696 | 9.19% | 1,519 |
+| JPM_10-K_2024 | 12,849,180 B | 1,190,388 | 9.26% | 1,494 |
+| KO_10-K_2023 | 4,161,309 B | 591,328 | 14.21% | 707 |
+| KO_10-K_2024 | 3,930,907 B | 594,410 | 15.12% | 724 |
+| MSFT_10-K_2023 | 9,963,591 B | 333,566 | 3.35% | 394 |
+| MSFT_10-K_2024 | 6,860,911 B | 350,817 | 5.11% | 413 |
+
+**Overall: 54,040,260 bytes → 4,677,146 characters, 8.65% retained.**
+
+The discarded 91% is HTML markup, inline-XBRL tags and boilerplate, not lost
+prose. 10-K primary documents are inline XBRL: every financial fact is wrapped in
+`<ix:...>` elements, and the document opens with an `<ix:header>` block inside a
+hidden `<div>` holding thousands of machine-readable facts with no readable
+content. Hidden elements and XBRL headers are dropped before text extraction,
+which is where the bulk of the reduction comes from.
+
+**MSFT's 3.35% is XBRL fact density, not extraction failure.** Verified by reading
+extracted chunks and by chunk count: MSFT yields **807 chunks** (394 + 413) against
+AAPL's **500** (248 + 252), despite AAPL retaining four times the percentage. The
+narrative content survived intact; Microsoft's filings simply carry proportionally
+far more fact markup per unit of prose.
+
+### Caught bug — CHUNK_SIZE exceeded the embedding model's hard limit
+
+The chunk size was initially specified at **400 tokens**. `all-MiniLM-L6-v2`
+truncates input at **256 word pieces** — verified directly against the loaded
+model (`max_seq_length == 256`), not assumed from documentation.
+
+Measured consequence at 400 tokens:
+
+| | value |
+|---|---|
+| chunks produced | 2,932 |
+| chunks over the 256-token limit | **2,743 (93.6%)** |
+| corpus tokens silently discarded | **307,811 (29.4%)** |
+
+Text past token 256 in an oversized chunk is dropped before encoding. It is
+represented in **no vector** and is therefore unretrievable — while still sitting
+in `chunks.json` looking perfectly intact.
+
+**The failure mode is silence.** `sentence-transformers` raises nothing, logs
+nothing, and returns a normal 384-dimensional vector for every chunk. All
+downstream shapes are correct, the sanity check still passed, and a FAISS index
+built on it would have worked. The symptom would have surfaced in Phase 6 or 7 as
+"the RAG pipeline sometimes can't find things that are definitely in the corpus" —
+an extremely expensive bug to trace backwards, and one easily mistaken for a
+retrieval-tuning problem.
+
+Corrected to **CHUNK_SIZE = 230**, leaving headroom for the `[CLS]` and `[SEP]`
+tokens the tokenizer adds and the `length_function` does not count.
+
+| after correction | value |
+|---|---|
+| chunks over the 256-token limit | **0 (0.0%)** |
+| corpus tokens discarded | **0** |
+
+Retrieval quality improved as a side effect — the on-topic probe mean rose from
+0.6961 to 0.7397 while the random-pair noise floor fell from 0.3053 to 0.2819, so
+signal-to-noise widened at both ends. Both `chunk.py` and `embed.py` now print the
+over-limit count on every run.
+
+### Chunking configuration
+
+| setting | value |
+|---|---|
+| splitter | LangChain `RecursiveCharacterTextSplitter` |
+| chunk_size | 230 tokens |
+| chunk_overlap | 50 tokens |
+| length_function | `all-MiniLM-L6-v2` tokenizer (word pieces) |
+| separators | `\n\n`, `\n`, `. `, `? `, `! `, `; `, `, `, ` `, `` |
+
+`RecursiveCharacterTextSplitter` measures **characters** by default. A token-based
+`length_function` backed by the embedding model's own tokenizer was supplied
+instead, so the budget is denominated in the same units as the model's 256-token
+ceiling. This matters more for financial prose than for ordinary English: filings
+are dense with figures, tickers, currency symbols and defined terms that tokenize
+far less efficiently than plain text, so a fixed character budget produces widely
+varying token counts and no reliable way to stay under the limit.
+
+### Final chunk statistics
+
+| statistic | tokens |
+|---|---|
+| total chunks | 5,751 |
+| min | 2 |
+| max | 230 |
+| mean | 192.38 |
+| median | 210 |
+| p95 | 230 |
+
+Every chunk carries **12 metadata fields**: `text`, `source_filename`, `ticker`,
+`company`, `form_type`, `fiscal_year`, `accession_number`, `source_url`,
+`chunk_index`, `char_start`, `char_end`, `token_count`. This is what makes Phase 6
+citation possible — a retrieved chunk resolves to an exact character span in a
+named EDGAR document, e.g. *JPMORGAN CHASE & CO 10-K FY2024, chunk 471, characters
+752069–753495*, with the accession number and source URL attached. Without those
+fields a retrieved chunk is unattributable and the "grounded answer with cited
+sources" requirement cannot be met.
+
+### Embeddings
+
+| property | value |
+|---|---|
+| model | `all-MiniLM-L6-v2` (local, no API) |
+| vectors | 5,751 × 384 |
+| dtype | float32 |
+| size on disk | 8,833,536 bytes (8.42 MB) |
+| L2-normalised | yes — dot product is cosine |
+| encoding time | 203.04 s (28.3 chunks/s, CPU) |
+| truncated at embed time | 0 |
+
+Embedding locally rather than through an API is a deliberate design choice: it is
+what made the CHUNK_SIZE correction above cheap to act on. Re-embedding the entire
+corpus cost 203 seconds and no quota, so discovering the truncation bug led
+immediately to a fix rather than to a decision about whether the fix was worth
+paying for.
+
+### Sanity check — do the embeddings carry signal?
+
+| comparison | mean cosine |
+|---|---|
+| random chunk pairs (noise floor) | 0.2819 |
+| adjacent chunks, same document | 0.6508 |
+| on-topic probe queries, top-1 | 0.7397 |
+| off-topic contrast query, best match anywhere | **0.2156** |
+
+All three checks passed: `adjacent_above_random`, `probes_above_random`,
+`probes_above_contrast`.
+
+**The strongest single result is the off-topic contrast score of 0.2156, which is
+below the 0.2819 random-pair floor.** The contrast query ("recipes for baking
+sourdough bread at home") shares no subject matter with any 10-K. Its best match
+anywhere in 5,751 chunks scoring *below* the average similarity of two randomly
+chosen chunks means the model places genuinely unrelated content further apart
+than arbitrary financial text — the space discriminates by meaning rather than
+assigning everything a high score.
+
+That distinction matters because the common failure of a broken embedding setup is
+a **collapsed space**: wrong pooling, an unnormalised output, or a mismatched
+tokenizer produces vectors clustered so tightly that everything scores 0.9 against
+everything else. Such a space passes a naive "are similar things similar?" test and
+fails completely at retrieval, because ranking becomes meaningless. A high on-topic
+score alone would not have ruled this out. The gap between 0.7397 on-topic and
+0.2156 off-topic — a spread of 0.52 — does.
+
+### Verified row-level alignment
+
+Row *i* of `embeddings.npy` must correspond to row *i* of `metadata.parquet`.
+Equal array lengths do not establish this: re-running `src.rag.chunk` without
+re-running `src.rag.embed` leaves both files with plausible shapes and silently
+wrong correspondence.
+
+The stored text of metadata rows **0, 1500, 3000 and 5750** was re-embedded and
+compared against the stored vector at the same index:
+
+| row | cosine(stored vector, re-embedded text) |
+|---|---|
+| 0 | 1.000000 |
+| 1500 | 1.000000 |
+| 3000 | 1.000000 |
+| 5750 | 1.000000 |
+
+Exact agreement at every index proves row-level correspondence, not merely equal
+counts. This is now enforced as a regression test in
+`tests/test_embeddings_alignment.py` (6 tests, all passing), which additionally
+includes a **negative control**: it verifies that comparing row *i*'s text against
+row *i+1*'s vector scores clearly below 1.0. Without that control the alignment
+assertion could pass on a shifted array if neighbouring chunks happened to embed
+near-identically, and the test would provide false assurance.
+
+### Limitations
+
+- **Financial tables extract as unstructured token sequences.** Column structure is
+  destroyed by tag stripping, so a figure ends up decoupled from its row label and
+  period heading — a chunk may contain `121,649` and `62,087` and `2023` with no
+  recoverable relationship between them. Chunks containing tables therefore cannot
+  reliably answer figure-specific questions, and an LLM reading one could pair a
+  number with the wrong year while sounding entirely confident. **Phase 7 evaluation
+  questions must target qualitative and risk-factor content, not table figures.**
+  Correct handling would require layout-aware parsing and is out of scope.
+- **Near-identical boilerplate across fiscal years produces duplicate retrievals.**
+  Risk factors are frequently copied verbatim between annual reports, so both years
+  of the same filing surface together with effectively identical scores. Measured
+  examples: KO FY2023 chunk 90 and KO FY2024 chunk 95 both score **0.8017** on
+  "risks related to supply chain disruption and manufacturing" — occupying the top
+  two slots; KO FY2024 chunk 173 and FY2023 chunk 162 both score **0.7433** on
+  cybersecurity; AAPL FY2023 chunk 132 and FY2024 chunk 139 both score **0.6103** on
+  revenue recognition. Top-k retrieval therefore spends part of its context budget
+  on redundant text, reducing the effective diversity of evidence reaching the LLM.
+- **Retrieval cannot discriminate by fiscal year.** The year exists only in
+  metadata; it is not present in the embedded text. A question about FY2024
+  specifically will match FY2023 and FY2024 chunks equally well, and the ranking
+  between them is arbitrary with respect to the year asked about. Phase 5 or 6 will
+  need metadata filtering, or the year prepended to chunk text before embedding.
+- **32 chunks (0.56%) are shorter than 20 whitespace tokens**, 6 of them under 10.
+  Twelve begin with a stray `.` where the splitter cut on the `". "` separator and
+  left the delimiter leading the next chunk. Others are bare risk-factor headings
+  such as *"Product safety and quality concerns could negatively affect our
+  business."* — these match topical queries well precisely because they are clean
+  topic statements, while carrying no substantive content to ground an answer in.
+  They are wasted retrieval slots and worth filtering with a minimum-token threshold
+  before building the index.
+
+## Phase 5 — FAISS vector store and retrieval
 
 *Not started.*
 

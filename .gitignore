@@ -23,6 +23,17 @@ env/
 # Evidence trail: small, and referenced by RESULTS.md
 !/data/processed/dataset_stats.json
 
+# SEC filings: raw documents ignored, provenance manifest committed.
+# The directory itself must be un-ignored first - git does not descend into an
+# excluded directory, so a negation inside one it never visits has no effect.
+!/data/raw/filings/
+/data/raw/filings/*
+!/data/raw/filings/manifest.json
+
+# Embeddings and chunk payload (regenerable from the manifest)
+/data/processed/embeddings/
+/data/processed/chunks.json
+
 # Model checkpoints / serialized estimators
 models/
 # ~250MB each - listed explicitly even though models/ already covers them

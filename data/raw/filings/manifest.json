@@ -1,0 +1,112 @@
+{
+  "phase": "4-corpus",
+  "user_agent": "fin-rag research project pereirakevi7@gmail.com",
+  "filing_count": 8,
+  "total_bytes": 54040260,
+  "filings": [
+    {
+      "ticker": "AAPL",
+      "company": "Apple Inc.",
+      "form_type": "10-K",
+      "fiscal_year": 2023,
+      "filing_date": "2023-11-03",
+      "report_date": "2023-09-30",
+      "accession_number": "0000320193-23-000106",
+      "cik": 320193,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019323000106/aapl-20230930.htm",
+      "local_filename": "AAPL_10-K_2023.htm",
+      "file_size_bytes": 1558924
+    },
+    {
+      "ticker": "AAPL",
+      "company": "Apple Inc.",
+      "form_type": "10-K",
+      "fiscal_year": 2024,
+      "filing_date": "2024-11-01",
+      "report_date": "2024-09-28",
+      "accession_number": "0000320193-24-000123",
+      "cik": 320193,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019324000123/aapl-20240928.htm",
+      "local_filename": "AAPL_10-K_2024.htm",
+      "file_size_bytes": 1503780
+    },
+    {
+      "ticker": "JPM",
+      "company": "JPMORGAN CHASE & CO",
+      "form_type": "10-K",
+      "fiscal_year": 2023,
+      "filing_date": "2024-02-16",
+      "report_date": "2023-12-31",
+      "accession_number": "0000019617-24-000225",
+      "cik": 19617,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/19617/000001961724000225/jpm-20231231.htm",
+      "local_filename": "JPM_10-K_2023.htm",
+      "file_size_bytes": 13211658
+    },
+    {
+      "ticker": "JPM",
+      "company": "JPMORGAN CHASE & CO",
+      "form_type": "10-K",
+      "fiscal_year": 2024,
+      "filing_date": "2025-02-14",
+      "report_date": "2024-12-31",
+      "accession_number": "0000019617-25-000270",
+      "cik": 19617,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000270/jpm-20241231.htm",
+      "local_filename": "JPM_10-K_2024.htm",
+      "file_size_bytes": 12849180
+    },
+    {
+      "ticker": "KO",
+      "company": "COCA COLA CO",
+      "form_type": "10-K",
+      "fiscal_year": 2023,
+      "filing_date": "2024-02-20",
+      "report_date": "2023-12-31",
+      "accession_number": "0000021344-24-000009",
+      "cik": 21344,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/21344/000002134424000009/ko-20231231.htm",
+      "local_filename": "KO_10-K_2023.htm",
+      "file_size_bytes": 4161309
+    },
+    {
+      "ticker": "KO",
+      "company": "COCA COLA CO",
+      "form_type": "10-K",
+      "fiscal_year": 2024,
+      "filing_date": "2025-02-20",
+      "report_date": "2024-12-31",
+      "accession_number": "0000021344-25-000011",
+      "cik": 21344,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/21344/000002134425000011/ko-20241231.htm",
+      "local_filename": "KO_10-K_2024.htm",
+      "file_size_bytes": 3930907
+    },
+    {
+      "ticker": "MSFT",
+      "company": "MICROSOFT CORP",
+      "form_type": "10-K",
+      "fiscal_year": 2023,
+      "filing_date": "2023-07-27",
+      "report_date": "2023-06-30",
+      "accession_number": "0000950170-23-035122",
+      "cik": 789019,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017023035122/msft-20230630.htm",
+      "local_filename": "MSFT_10-K_2023.htm",
+      "file_size_bytes": 9963591
+    },
+    {
+      "ticker": "MSFT",
+      "company": "MICROSOFT CORP",
+      "form_type": "10-K",
+      "fiscal_year": 2024,
+      "filing_date": "2024-07-30",
+      "report_date": "2024-06-30",
+      "accession_number": "0000950170-24-087843",
+      "cik": 789019,
+      "source_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017024087843/msft-20240630.htm",
+      "local_filename": "MSFT_10-K_2024.htm",
+      "file_size_bytes": 6860911
+    }
+  ]
+}

@@ -25,6 +25,9 @@ env/
 
 # Model checkpoints / serialized estimators
 models/
+# ~250MB each - listed explicitly even though models/ already covers them
+models/distilbert_standard/
+models/distilbert_weighted/
 *.pt
 *.bin
 *.safetensors

@@ -28,6 +28,15 @@ DATASET_CONFIG = "sentences_66agree"
 # financial_phrasebank.py: names=["negative", "neutral", "positive"].
 LABEL_NAMES = ["negative", "neutral", "positive"]
 
+# DistilBERT fine-tuning (Phase 3)
+MODEL_CHECKPOINT = "distilbert-base-uncased"
+MAX_LENGTH = 128          # corpus max is 81 whitespace tokens; 512 is unnecessary
+LEARNING_RATE = 2e-5
+NUM_EPOCHS = 4
+BATCH_SIZE = 16
+DISTILBERT_STANDARD_DIR = MODELS_DIR / "distilbert_standard"
+DISTILBERT_WEIGHTED_DIR = MODELS_DIR / "distilbert_weighted"
+
 # Splits
 RANDOM_SEED = 42
 TRAIN_RATIO = 0.70

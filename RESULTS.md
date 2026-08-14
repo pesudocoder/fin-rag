@@ -310,7 +310,235 @@ on this baseline for this application.
 
 ## Phase 3 — Fine-tuned DistilBERT classifier
 
-*Not started.*
+Sources: `results/distilbert_history.json` (per-epoch val history, training config),
+`results/val_comparison.json` (val comparison), `results/test_metrics.json` (final
+held-out test evaluation, produced by `src/model/evaluate_test.py`).
+
+Trained on Google Colab, **Tesla T4**, via `notebooks/train_distilbert.ipynb`.
+
+### Training configuration
+
+| setting | value |
+|---|---|
+| base model | `distilbert-base-uncased` |
+| max_length | 128 |
+| learning_rate | 2e-05 |
+| epochs | 4 |
+| batch size | 16 |
+| weight_decay | 0.01 |
+| warmup | 0.1 (ratio of total steps) |
+| fp16 | true |
+| seed | 42 |
+| model selection | `macro_f1`, `greater_is_better=True` |
+
+### Computed class weights (train split only)
+
+| class | weight |
+|---|---|
+| negative | 2.7287 |
+| neutral | 0.5550 |
+| positive | 1.2024 |
+
+Computed with `compute_class_weight('balanced', ...)` on the 2,947 training rows
+only. Deriving them from val or the full corpus would leak the evaluation
+distribution into training.
+
+### Per-epoch validation history — standard cross-entropy
+
+| epoch | val loss | accuracy | macro F1 | negative F1 | negative recall |
+|---|---|---|---|---|---|
+| 1 | 0.3860 | 0.8703 | 0.8295 | 0.7612 | 0.6623 |
+| **2** | **0.2919** | 0.8861 | **0.8654** | 0.8415 | 0.8961 |
+| 3 | 0.3418 | 0.8892 | 0.8631 | 0.8182 | 0.8182 |
+| 4 | 0.3634 | 0.8813 | 0.8589 | 0.8228 | 0.8442 |
+
+**Selected: epoch 2** (macro F1 0.8654).
+
+### Per-epoch validation history — class-weighted cross-entropy
+
+| epoch | val loss | accuracy | macro F1 | negative F1 | negative recall |
+|---|---|---|---|---|---|
+| 1 | 0.5372 | 0.8244 | 0.7975 | 0.7591 | 0.6753 |
+| 2 | **0.3136** | 0.8797 | 0.8561 | 0.8166 | 0.8961 |
+| 3 | 0.3690 | 0.8861 | 0.8669 | 0.8375 | 0.8701 |
+| **4** | 0.3718 | 0.8908 | **0.8739** | 0.8535 | 0.8701 |
+
+**Selected: epoch 4** (macro F1 0.8739).
+
+### Overfitting evidence — standard variant
+
+Validation loss bottoms at **epoch 2 (0.2919)** and then rises monotonically to
+**0.3634 by epoch 4**, while training loss falls from roughly 0.70 to 0.10. That
+divergence — training loss still dropping while validation loss climbs — is
+textbook overfitting, beginning after epoch 2 on a 2,947-row training set.
+
+> Traceability note: the training-loss figures (0.70 → 0.10) are the one pair of
+> numbers in this document **not** recoverable from a committed file. The
+> notebook's `epoch_rows()` filter kept only log entries containing
+> `eval_macro_f1`, which silently discarded every training-loss entry. They come
+> from the Colab console output. The notebook now also captures a `train_logs`
+> block, so a future re-run records them.
+
+Best validation macro F1 was also epoch 2 (0.8654), and `load_best_model_at_end`
+**restored epoch 2 rather than keeping epoch 4**. This is verifiable in the
+history file rather than merely asserted: the final post-training evaluation row
+(logged at epoch 4.0) reports `eval_macro_f1 = 0.8654119513631464` and
+`eval_loss = 0.29186752438545227`, values identical to epoch 2 and different from
+epoch 4's. Had selection silently fallen back to the last epoch, that row would
+read 0.8589 / 0.3634.
+
+### Divergence in the weighted variant — why selecting on loss would have been wrong
+
+The weighted variant's validation loss also bottoms at epoch 2 (0.3136) and rises
+through epochs 3 and 4 (0.3690, 0.3718). But its **macro F1 keeps climbing the
+whole time**: 0.7975 → 0.8561 → 0.8669 → **0.8739**. Loss and the metric of
+interest move in opposite directions over the second half of training.
+
+These two quantities measure different things. Cross-entropy is a function of the
+full predicted probability distribution, so it penalizes **miscalibrated
+confidence** — a model that is right but has drifted from 0.95 to 0.75 confidence
+on its correct answers accrues more loss while getting no answer wrong. Macro F1
+depends only on `argmax`, so it is invisible to confidence and changes only when a
+prediction actually crosses a decision boundary. In epochs 3 and 4 this model was
+becoming less well-calibrated while continuing to move borderline cases onto the
+correct side of the boundary.
+
+**Had `metric_for_best_model` been left at its loss default, epoch 2 would have
+been selected and 0.0178 macro F1 discarded** (0.8561 vs 0.8739). Choosing the
+selection metric to match the metric that is actually reported is not a
+formality.
+
+### Final test evaluation (n = 632)
+
+All four models, `results/test_metrics.json`. **Majority-class floor on test:
+0.6013.**
+
+| model | accuracy | macro F1 | weighted F1 | negative F1 | negative recall |
+|---|---|---|---|---|---|
+| dummy (most_frequent) | 0.6013 | 0.2503 | 0.4515 | 0.0000 | 0.0000 |
+| TF-IDF + LogReg, balanced | 0.7975 | 0.7458 | 0.7948 | 0.6667 | 0.6234 |
+| DistilBERT, standard | 0.8940 | 0.8699 | 0.8936 | 0.8313 | 0.8961 |
+| **DistilBERT, weighted** | **0.8987** | **0.8787** | **0.8998** | **0.8383** | **0.9091** |
+
+Per-class precision / recall / F1 on test:
+
+| model | class | precision | recall | F1 | support |
+|---|---|---|---|---|---|
+| TF-IDF balanced | negative | 0.7164 | 0.6234 | 0.6667 | 77 |
+| | neutral | 0.8375 | 0.8816 | 0.8590 | 380 |
+| | positive | 0.7333 | 0.6914 | 0.7118 | 175 |
+| DistilBERT standard | negative | 0.7753 | 0.8961 | 0.8313 | 77 |
+| | neutral | 0.9128 | 0.9368 | 0.9247 | 380 |
+| | positive | 0.9150 | 0.8000 | 0.8537 | 175 |
+| DistilBERT weighted | negative | 0.7778 | 0.9091 | 0.8383 | 77 |
+| | neutral | 0.9475 | 0.9026 | 0.9245 | 380 |
+| | positive | 0.8611 | 0.8857 | 0.8732 | 175 |
+
+### Confusion matrices (test, rows = truth, columns = prediction)
+
+DistilBERT standard:
+
+| | pred negative | pred neutral | pred positive |
+|---|---|---|---|
+| **true negative** | 69 | 5 | 3 |
+| **true neutral** | 14 | 356 | 10 |
+| **true positive** | 6 | 29 | 140 |
+
+DistilBERT weighted:
+
+| | pred negative | pred neutral | pred positive |
+|---|---|---|---|
+| **true negative** | 70 | 3 | 4 |
+| **true neutral** | 16 | 343 | 21 |
+| **true positive** | 4 | 16 | 155 |
+
+**Directional errors — confusing positive with negative, the sign-flip failure —
+total 8 of 632 for the weighted DistilBERT against 18 of 632 for TF-IDF.** The
+standard variant sits at 9.
+
+The remaining errors are overwhelmingly `neutral` confusions: of the weighted
+model's 64 total errors, **56 (87.5%) involve `neutral`** on one side or the
+other, and only 8 are outright sign flips. That distinction matters for a risk
+system. Calling a negative sentence "neutral" understates risk and is recoverable
+by a human reading the flagged document; calling a negative sentence "positive"
+inverts the signal. The model almost never does the latter.
+
+### Validation → test movement
+
+| variant | val macro F1 | test macro F1 | change |
+|---|---|---|---|
+| standard | 0.8654 | 0.8699 | +0.0045 |
+| weighted | 0.8739 | 0.8787 | +0.0048 |
+
+Both variants scored **slightly higher on test than on the validation split used
+for model selection**. Since selection pressure was applied to val and not to
+test, a large drop would have indicated overfitting to val through checkpoint
+selection. A small gain in both directions indicates the opposite: the selection
+procedure did not overfit, and the two splits are drawn from the same
+distribution. (The TF-IDF baseline moved the same way, 0.7326 → 0.7458.)
+
+### Key finding — imbalance is largely a model-capacity problem
+
+Class weighting had opposite importance for the two model families:
+
+| model family | negative recall, unweighted | negative recall, weighted | change |
+|---|---|---|---|
+| TF-IDF + LogReg (val) | 0.3117 | 0.6494 | **+0.3377** |
+| DistilBERT (test) | 0.8961 | 0.9091 | +0.0130 |
+
+For the linear model, class weighting was transformative — it more than doubled
+negative recall and was the difference between a model that detected fewer than
+one in three negative sentences and one that detected roughly two in three. For
+DistilBERT, the same intervention moved negative recall by 0.0130, because the
+*unweighted* transformer already reached 0.8961 without any reweighting at all.
+
+The conclusion is that the class imbalance was never purely a data problem to be
+corrected by reweighting; it was substantially a **capacity** problem. The
+bag-of-n-grams model lacked the representational power to separate the minority
+class, and reweighting the loss was a way of forcing a weak model to spend its
+limited capacity on the rare class — necessarily trading precision to do so
+(negative precision 0.80 → 0.60 on val). A model that can actually represent the
+distinction does not need the crutch: DistilBERT reaches 0.8961 negative recall
+*and* 0.7753 negative precision unweighted, dominating the reweighted linear model
+on both axes simultaneously.
+
+### Caveat — weighting was not decisive for DistilBERT
+
+The weighted variant beats the standard variant by **+0.0088 macro F1** (0.8787 vs
+0.8699) on test. This is within the range of run-to-run variation from GPU
+non-determinism, which the history file itself flags: cuDNN kernel selection and
+non-deterministic CUDA reduction order produce differences in the third decimal
+place even with all seeds fixed.
+
+**No claim should be made that class weighting was decisive for the transformer.**
+A defensible statement is that the two variants performed equivalently within
+noise, with the weighted one marginally ahead on the minority class. Establishing
+a real difference would require multiple seeds per variant and a comparison of
+their distributions, which was not run.
+
+### Limitations
+
+- **The weighted variant peaked at its final epoch** (epoch 4, the last one
+  trained). Its macro F1 was still rising at the point training stopped, so it may
+  not have converged. More epochs might improve it, and the 4-epoch budget was
+  chosen a priori rather than by observing convergence. The standard variant, by
+  contrast, clearly peaked at epoch 2 and was overfitting thereafter.
+- **The +0.0088 gap between variants is within GPU non-determinism** (see caveat
+  above). Single run per variant, no seed replication, no confidence intervals.
+- **No hyperparameter search.** Learning rate, batch size, epochs and weight decay
+  were fixed a priori. As with the Phase 2 baseline, this is a reasonable single
+  configuration, not a tuned optimum.
+- **Checkpoint zips extracted one level nested.** `distilbert_standard.zip`
+  unpacked to `distilbert_standard/distilbert_standard/`, requiring manual
+  flattening before `evaluate_test.py` could load the checkpoints. Documented in
+  `notebooks/README.md`.
+- **The Colab upload cell's assertion was wrong.** It checked the dict returned by
+  `files.upload()` rather than the filesystem. Since that return value reflects
+  only the current invocation, uploading the three files across more than one call
+  made the cell fail on files that were in fact present. Fixed to check
+  `os.path.exists` instead.
+- **Training loss is not in the committed history file** (see the traceability
+  note above); the notebook has been fixed to capture it on future runs.
 
 ## Phase 4 — Document ingestion and chunking
 
@@ -365,12 +593,35 @@ required to keep it honest.
   most-frequent dummy classifier scores **59.97% accuracy but 0.2499 macro F1** on this
   corpus.
 
-**Fine-tuned DistilBERT (Phase 3)**
+**Fine-tuned DistilBERT (Phase 3, held-out test split, n=632)**
 
-- Macro F1: *TBD* — to be compared against baseline 0.7326 and floor 0.6006.
-- Accuracy: *TBD* — to be compared against baseline 0.7911 and floor 0.6006.
-- Negative-class recall: *TBD* — to be compared against baseline 0.6494.
-- Improvement over classical baseline: *TBD*.
+- Fine-tuned DistilBERT reached **macro F1 0.8787 and accuracy 0.8987 on a
+  held-out test split, against a majority-class floor of 0.6013** — i.e. **+29.7
+  accuracy points over always predicting `neutral`**, and **+0.1329 macro F1 over
+  the TF-IDF + logistic regression baseline** (0.7458). Source:
+  `results/test_metrics.json`.
+- **Negative-class (risk) recall 0.9091**, against 0.6234 for the tuned linear
+  baseline and 0.0 for a majority-class dummy — a **+0.2857 improvement in
+  detection of the minority risk class** over the classical model.
+- **Sign-flip errors — predicting `positive` for a `negative` sentence or the
+  reverse — reduced from 18/632 to 8/632** versus the TF-IDF baseline. 87.5% of
+  the transformer's remaining errors involve `neutral` rather than inverting the
+  signal.
+- Selected checkpoints on **macro F1 rather than validation loss**; on the
+  weighted variant the two diverged after epoch 2 (loss rising while macro F1
+  climbed to 0.8739), and selecting on loss would have discarded 0.0178 macro F1.
+- Caught overfitting on the standard variant via train/val loss divergence after
+  epoch 2, and used `load_best_model_at_end` to restore epoch 2 (0.8654) rather
+  than the final epoch (0.8589).
+- Test scores came in **slightly above** validation for both variants (0.8739 →
+  0.8787 weighted; 0.8654 → 0.8699 standard), evidence that checkpoint selection
+  on val did not overfit val.
+- **Framing point for interviews:** class weighting raised negative recall by
+  +0.3377 for the linear model but only +0.0130 for DistilBERT, because the
+  unweighted transformer already reached 0.8961. The imbalance was substantially a
+  model-capacity problem, not purely a data problem. Do **not** claim weighting was
+  decisive for the transformer — the +0.0088 macro F1 gap between its two variants
+  is within GPU non-determinism.
 
 **RAG pipeline (Phase 7)**
 

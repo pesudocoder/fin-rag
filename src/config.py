@@ -22,6 +22,7 @@ RESULTS_DIR = PROJECT_ROOT / "results"    # committed: metrics JSON
 FILINGS_DIR = DATA_RAW / "filings"        # gitignored except manifest.json
 EMBEDDINGS_DIR = DATA_PROCESSED / "embeddings"
 CHUNKS_FILE = DATA_PROCESSED / "chunks.json"
+FAISS_DIR = DATA_PROCESSED / "faiss"
 
 # Dataset
 DATASET_NAME = "takala/financial_phrasebank"
@@ -70,6 +71,16 @@ CHUNK_SIZE = 230
 CHUNK_OVERLAP = 50
 EMBEDDING_MAX_TOKENS = 256   # all-MiniLM-L6-v2 hard limit
 EMBEDDING_DIM = 384
+
+# Retrieval (Phase 5)
+TOP_K = 5
+# Cosine above which two retrieved chunks are treated as near-duplicates. 10-K
+# risk factors are frequently copied verbatim between fiscal years, so both years
+# of the same filing otherwise surface together and waste the context budget.
+DEDUPE_THRESHOLD = 0.95
+# Fetch this multiple of k from FAISS before filtering/deduping, so there are
+# spare candidates to backfill with.
+OVERFETCH_MULTIPLIER = 4
 
 # Splits
 RANDOM_SEED = 42

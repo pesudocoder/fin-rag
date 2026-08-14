@@ -805,7 +805,224 @@ near-identically, and the test would provide false assurance.
 
 ## Phase 5 — FAISS vector store and retrieval
 
-*Not started.*
+Sources: `data/processed/faiss/index_info.json` (index build record),
+`results/retrieval_eval.json` (probe evaluation). Produced by `src/rag/index.py`,
+`src/rag/retrieve.py`, `src/rag/eval_retrieval.py`. Guarded by
+`tests/test_retrieval.py` (18 tests, all passing).
+
+No LLM API calls in this phase.
+
+### Index design — why exhaustive search, not approximate
+
+| property | value |
+|---|---|
+| index type | `IndexFlatIP` |
+| metric | inner product (== cosine; vectors are L2-normalised) |
+| vectors | 5,751 × 384 |
+| approximate | **false** |
+| build time | 7.47 ms |
+| index file | 8,833,581 bytes |
+
+Three reasons an exhaustive index is correct at this scale:
+
+**1. Inner product is exactly cosine here.** The Phase 4 vectors are unit-length,
+verified before indexing: maximum deviation from unit norm across all 5,751
+vectors is **1.19e-07**, against a 1e-04 tolerance. `src/rag/index.py` treats this
+as a hard precondition and aborts rather than indexing — if the vectors were not
+normalised, `IndexFlatIP` would rank by magnitude as well as direction, and every
+score in the system (including the dedupe threshold) would be silently wrong.
+
+**2. 5,751 vectors is far below the scale where approximation pays.** A flat scan
+over 8.4 MB of float32 completes in well under a millisecond. IVF and HNSW buy
+speed by searching only part of the space; that trade only makes sense once a
+linear scan is genuinely too slow. Here it would add tuning parameters
+(nlist/nprobe, efSearch), a training step, and recall below 100%, while saving no
+measurable time.
+
+**3. Exact search is reproducible and removes the index as a suspect.** A flat
+index returns precisely what a brute-force numpy scan returns.
+`test_faiss_matches_brute_force_numpy_scan` asserts this on three queries at
+k=10: identical score sequences to `atol=1e-6`, and every returned id scoring
+what brute force says it scores. Any retrieval oddity found later is therefore
+attributable to the embeddings or the query, never to the index. With an
+approximate index, recall@k would itself become a variable needing measurement
+and defence.
+
+**At millions of vectors this decision reverses.** Beyond roughly 10⁶ embeddings a
+flat scan stops being free, and IVFFlat with a tuned nprobe (or HNSW where memory
+allows) becomes correct — trading ~95–99% recall for orders-of-magnitude faster
+search. Nothing in the codebase depends on flatness except the exactness test, so
+the swap stays cheap.
+
+**A subtlety the exactness test exposed.** The first version of that test asserted
+FAISS and numpy return identical *id* sequences, and it failed — not from
+approximation error, but because this corpus contains chunks that are
+byte-identical across fiscal years. Their vectors are identical, so they tie
+exactly, and FAISS and `np.argsort` break ties differently. The test now asserts
+that scores match at every rank and that any positional id disagreement occurs
+**only** where scores are equal; a reorder of genuinely different scores still
+fails. A companion test asserts such ties actually exist, so the allowance cannot
+quietly become dead weight.
+
+### Stale-index protection
+
+`index_info.json` records the SHA256 of the embeddings file the index was built
+from (`fa86bbc67cf9e227…`). `Retriever` re-checks it at load, alongside an
+index-count vs metadata-row-count check, and raises `StaleIndexError` naming the
+likely cause — re-chunked without re-embedding, or re-embedded without rebuilding
+the index.
+
+This exists because of the Phase 4 truncation bug. That failure taught the
+relevant lesson: **the dangerous failures in this pipeline are the silent ones.**
+An index built from superseded embeddings has correct shapes, returns plausible
+results for every query, and attributes each one to the wrong text. Nothing raises.
+The fingerprint converts that into a loud startup failure. Verified by corrupting
+the recorded hash and confirming `StaleIndexError` fires.
+
+### Retrieval metrics
+
+16 probes: 11 company-specific, 3 cross-company, 2 deliberately out-of-corpus.
+14 carry an expected ticker and are scored. k=5.
+
+| metric | dedupe off | dedupe on |
+|---|---|---|
+| hit rate @1 | 0.8571 | 0.8571 |
+| hit rate @3 | 1.0000 | 1.0000 |
+| hit rate @5 | 1.0000 | 1.0000 |
+| MRR | 0.9048 | **0.9286** |
+| duplicates dropped | 0 | 33 |
+| mean unique companies in top-5 | 1.562 | 1.625 |
+
+### Deduplication effect
+
+| | value |
+|---|---|
+| duplicates dropped | 33 |
+| probes affected | **16 of 16** |
+| probes whose top-k composition changed | 7 |
+| MRR | 0.9048 → 0.9286 |
+| hit rate @5 | 1.0 → 1.0 (unchanged) |
+
+**Precisely: deduplication improved ranking quality, not coverage.** Hit rate at
+every k is identical with and without it — the same probes find their expected
+company either way, so dedupe recovered nothing that was previously missed. What
+changed is *where* the correct result sits: MRR rose 0.0238 because correct
+results moved up the ranking once duplicates stopped occupying the slots above
+them. For a RAG pipeline the practical value is the freed context budget — a
+duplicate chunk consumes a top-k slot and contributes no information the retained
+copy does not already carry.
+
+Every one of the 16 probes was affected, which indicates cross-year duplication
+is pervasive in this corpus rather than confined to a few risk factors.
+
+**Many duplicate pairs score cosine 1.0 exactly** — byte-identical boilerplate
+carried verbatim from one 10-K to the next. On the supply-chain probe the top two
+results without dedupe were two copies of the same Coca-Cola paragraph, KO FY2024
+chunk 95 and KO FY2023 chunk 90, both scoring **0.7354**. Half the visible context
+window was one paragraph printed twice. With dedupe, AAPL FY2023 chunk 47 (0.6856)
+moves into rank 2.
+
+### Refusal threshold analysis
+
+The two out-of-corpus probes were designed to test whether the index returns
+confident nonsense for questions it has no material on. They behaved very
+differently:
+
+| probe | top-1 score |
+|---|---|
+| "clinical trial results for our new oncology drug candidate" | 0.2549 |
+| "aircraft fleet fuel hedging and aircraft lease obligations" | **0.4630** |
+
+Against the weakest *legitimate* result in the whole probe set:
+
+| | score |
+|---|---|
+| highest out-of-corpus top-1 (aircraft) | 0.4630 |
+| lowest legitimate top-1 (KO water scarcity) | 0.5750 |
+| **margin** | **0.1120** |
+
+The oncology probe behaved as designed — 0.2549 sits below the 0.2819 random-pair
+noise floor measured in Phase 4, so the corpus correctly has nothing to say. The
+aircraft probe did not.
+
+**Why the aircraft query scored 0.4630.** JPMorgan genuinely discusses lease
+obligations and hedging at length — just not aircraft ones. The embedding model
+has no mechanism for the distinction: "lease obligations" and "hedging" are the
+semantic load-bearing terms, "aircraft" is one modifier among them, and cosine
+similarity rewards the overlap. The retrieved chunks are topically adjacent and
+genuinely about leases and hedging. They simply do not answer the question asked.
+
+**Conclusion: a pure score threshold is not a reliable refusal mechanism at this
+corpus size.** A 0.112 margin, estimated from 16 probes, is not a decision
+boundary — it is a gap that a slightly unluckier query would close. Setting a
+threshold at 0.50 would refuse nothing that matters but also admit the aircraft
+query; setting it at 0.60 would refuse the legitimate water-scarcity question. The
+two populations are not separable by score alone, and no amount of tuning on 16
+observations would make that estimate trustworthy.
+
+**Implication for Phase 6:** refusal must be driven by whether the retrieved text
+actually answers the question, instructed at the prompt level, with the similarity
+score used only as a weak secondary signal. This is exactly the configuration that
+produces hallucinations — retrieval hands the model plausible, on-topic,
+non-answering context, and a model not explicitly instructed to check
+answerability will write a fluent answer over it. The aircraft probe is worth
+carrying into the Phase 7 evaluation set as a known-hard case.
+
+### Failures at k=1
+
+Hit rate @1 is 0.8571, i.e. **2 of 14 scored probes miss at rank 1**. Both are
+real failures, not artefacts:
+
+**Broker-dealer probe** — *"risks of operating broker dealer and market making
+businesses"*, expected JPM:
+
+| rank | score | result |
+|---|---|---|
+| 1 | 0.5852 | AAPL FY2024 chunk 75 |
+| 2 | 0.5788 | JPM FY2024 chunk 37 |
+
+A **0.0064 margin**. Apple's financial-instruments boilerplate outranked
+JPMorgan's actual broker-dealer disclosure. At k=1 this pipeline would hand an LLM
+the wrong company's text for a question about investment banking.
+
+**Supply-chain probe** — *"risks from disruption of our supply chain and single
+source suppliers"*, expected AAPL: KO FY2024 chunk 95 takes rank 1 at 0.7354, with
+AAPL first appearing at rank 2 (0.6856). Coca-Cola's supply-chain risk language is
+simply a closer lexical match to the query than Apple's, despite Apple being the
+company whose single-source supplier concentration the question is really about.
+
+Both are recovered by rank 2–3, which is why hit@3 is 1.0. **A k=1 retrieval
+configuration would be materially worse than these aggregates suggest**, and the
+k=5 default is doing real work.
+
+### Limitations
+
+- **Cross-company retrieval collapses to a single filer.** Mean unique companies
+  in the top-5 is **1.625** across all probes. The FX probe returned **5 KO
+  chunks** and nothing else; the cybersecurity probe returned **4 KO and 1 MSFT** —
+  despite all four filers discussing both topics at length. Whichever company's
+  phrasing best matches the query monopolises the result set. **Consequence:
+  comparative questions spanning multiple companies cannot be answered reliably,
+  so Phase 7 evaluation questions must be scoped to a single company.** Running
+  retrieval per-ticker and merging the results would address this and is noted as
+  future work. (The climate probe was the exception, returning JPM 2 / KO 2 /
+  MSFT 1 — so the collapse is severe but not universal.)
+- **Retrieval evaluation is ticker-level source checking only.** A probe counts as
+  a hit when a chunk from the expected company appears in the top-k. That says
+  nothing about whether the retrieved passage contains the answer, whether it is
+  the best available passage, or whether an LLM reading it would respond
+  truthfully. Retrieving the right document is necessary but not sufficient for a
+  grounded answer. Answer correctness and hallucination rate are Phase 7.
+- **The probe set is 16 queries written by the same person who built the
+  retriever**, which is small and not independent. Queries were phrased with
+  knowledge of what the corpus contains, which flatters hit rate; a genuinely
+  independent set — or questions written by someone who has not seen the chunks —
+  would give a more honest estimate. Every aggregate above rests on 14 scored
+  observations, so differences of a few percentage points are not meaningful.
+- **Build time is recorded from a single run** (7.47 ms in `index_info.json`).
+  Observed times across runs ranged from roughly 5 ms to 14 ms; only the one value
+  is persisted. The variation is scheduling noise at this scale and carries no
+  information.
 
 ## Phase 6 — Retrieval and RAG answer generation
 

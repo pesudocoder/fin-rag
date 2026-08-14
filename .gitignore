@@ -30,9 +30,10 @@ env/
 /data/raw/filings/*
 !/data/raw/filings/manifest.json
 
-# Embeddings and chunk payload (regenerable from the manifest)
+# Embeddings, chunk payload and FAISS index (regenerable from the manifest)
 /data/processed/embeddings/
 /data/processed/chunks.json
+/data/processed/faiss/
 
 # Model checkpoints / serialized estimators
 models/

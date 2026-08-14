@@ -1,0 +1,2365 @@
+{
+  "phase": "5-retrieval-eval",
+  "scope": "Ticker-level source checking only. Not answer correctness - see Phase 7 for answer quality and hallucination rate.",
+  "index_type": "IndexFlatIP",
+  "vector_count": 5751,
+  "k": 5,
+  "dedupe_threshold": 0.95,
+  "overfetch_multiplier": 4,
+  "probe_count": 16,
+  "with_dedupe": {
+    "dedupe": true,
+    "k": 5,
+    "probe_count": 16,
+    "scored_probe_count": 14,
+    "hit_rate_at_1": 0.8571,
+    "hit_rate_at_3": 1.0,
+    "hit_rate_at_5": 1.0,
+    "mrr": 0.9286,
+    "total_duplicates_dropped": 33,
+    "out_of_corpus_top_scores": {
+      "clinical trial results for our new oncology drug candidate": 0.2549,
+      "aircraft fleet fuel hedging and aircraft lease obligations": 0.463
+    },
+    "mean_unique_companies_in_topk": 1.625,
+    "probes": [
+      {
+        "query": "risks from disruption of our supply chain and single source suppliers",
+        "category": "company-specific",
+        "expected_tickers": [
+          "AAPL"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7354,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 95,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6856,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 47,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6854,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 47,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.685,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 97,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6758,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 34,
+            "source": "AAPL_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "AAPL",
+          "AAPL",
+          "KO",
+          "AAPL"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 2,
+        "top_score": 0.7354,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3603,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 90,
+            "dropped_score": 0.7354,
+            "duplicate_of_row": 4315,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 95,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3605,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 92,
+            "dropped_score": 0.685,
+            "duplicate_of_row": 4317,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 97,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "dependence on outsourcing partners for manufacturing and assembly",
+        "category": "company-specific",
+        "expected_tickers": [
+          "AAPL"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.691,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 43,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6863,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 46,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6825,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 42,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6231,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 46,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6161,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 31,
+            "source": "AAPL_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "AAPL",
+          "AAPL",
+          "AAPL",
+          "AAPL",
+          "AAPL"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.691,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 292,
+            "dropped_source": "AAPL_10-K_2024.htm",
+            "dropped_chunk_index": 44,
+            "dropped_score": 0.6827,
+            "duplicate_of_row": 43,
+            "duplicate_of_source": "AAPL_10-K_2023.htm",
+            "duplicate_of_chunk_index": 43,
+            "similarity": 0.9839
+          },
+          {
+            "dropped_row": 295,
+            "dropped_source": "AAPL_10-K_2024.htm",
+            "dropped_chunk_index": 47,
+            "dropped_score": 0.6425,
+            "duplicate_of_row": 46,
+            "duplicate_of_source": "AAPL_10-K_2023.htm",
+            "duplicate_of_chunk_index": 46,
+            "similarity": 0.9541
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "risks relating to concentrate operations and independent bottling partners",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7657,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 133,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7163,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 134,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.7125,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 136,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6892,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 109,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.682,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 117,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7657,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3636,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 123,
+            "dropped_score": 0.7657,
+            "duplicate_of_row": 4353,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 133,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3637,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 124,
+            "dropped_score": 0.7163,
+            "duplicate_of_row": 4354,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 134,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3639,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 126,
+            "dropped_score": 0.7125,
+            "duplicate_of_row": 4356,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 136,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 3
+      },
+      {
+        "query": "obesity concerns and changing consumer preferences about sugar sweetened beverages",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7433,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 105,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6869,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 239,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6868,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 251,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6573,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 238,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5434,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 147,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7433,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 4333,
+            "dropped_source": "KO_10-K_2024.htm",
+            "dropped_chunk_index": 113,
+            "dropped_score": 0.7181,
+            "duplicate_of_row": 3618,
+            "duplicate_of_source": "KO_10-K_2023.htm",
+            "duplicate_of_chunk_index": 105,
+            "similarity": 0.9872
+          }
+        ],
+        "dropped_count": 1
+      },
+      {
+        "query": "water scarcity and poor water quality affecting our production",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.575,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 188,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.5419,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 181,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.4868,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 184,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.4734,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 192,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.4727,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 146,
+            "source": "KO_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.575,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3691,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 178,
+            "dropped_score": 0.575,
+            "duplicate_of_row": 4408,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 188,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3686,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 173,
+            "dropped_score": 0.4854,
+            "duplicate_of_row": 4404,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 184,
+            "similarity": 0.9996
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "credit risk arising from wholesale and consumer lending portfolios",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7822,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 538,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7812,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1157,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.7349,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 915,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.7291,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 534,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6855,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1156,
+            "source": "JPM_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7822,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 1688,
+            "dropped_source": "JPM_10-K_2023.htm",
+            "dropped_chunk_index": 1188,
+            "dropped_score": 0.7812,
+            "duplicate_of_row": 3176,
+            "duplicate_of_source": "JPM_10-K_2024.htm",
+            "duplicate_of_chunk_index": 1157,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 1444,
+            "dropped_source": "JPM_10-K_2023.htm",
+            "dropped_chunk_index": 944,
+            "dropped_score": 0.7349,
+            "duplicate_of_row": 2934,
+            "duplicate_of_source": "JPM_10-K_2024.htm",
+            "duplicate_of_chunk_index": 915,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 1051,
+            "dropped_source": "JPM_10-K_2023.htm",
+            "dropped_chunk_index": 551,
+            "dropped_score": 0.7291,
+            "duplicate_of_row": 2553,
+            "duplicate_of_source": "JPM_10-K_2024.htm",
+            "duplicate_of_chunk_index": 534,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 3
+      },
+      {
+        "query": "regulatory capital and liquidity requirements under Basel rules",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.688,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 448,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6761,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 19,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6656,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1318,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6558,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1319,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6543,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1345,
+            "source": "JPM_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.688,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 967,
+            "dropped_source": "JPM_10-K_2023.htm",
+            "dropped_chunk_index": 467,
+            "dropped_score": 0.688,
+            "duplicate_of_row": 2467,
+            "duplicate_of_source": "JPM_10-K_2024.htm",
+            "duplicate_of_chunk_index": 448,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 1
+      },
+      {
+        "query": "risks of operating broker dealer and market making businesses",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.5852,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 75,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.5788,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 37,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.5541,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 60,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5511,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 73,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5493,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 53,
+            "source": "JPM_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "AAPL",
+          "JPM",
+          "JPM",
+          "AAPL",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 2,
+        "top_score": 0.5852,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 72,
+            "dropped_source": "AAPL_10-K_2023.htm",
+            "dropped_chunk_index": 72,
+            "dropped_score": 0.5852,
+            "duplicate_of_row": 323,
+            "duplicate_of_source": "AAPL_10-K_2024.htm",
+            "duplicate_of_chunk_index": 75,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 552,
+            "dropped_source": "JPM_10-K_2023.htm",
+            "dropped_chunk_index": 52,
+            "dropped_score": 0.5747,
+            "duplicate_of_row": 2056,
+            "duplicate_of_source": "JPM_10-K_2024.htm",
+            "duplicate_of_chunk_index": 37,
+            "similarity": 0.9983
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "competition in cloud computing and infrastructure services",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6414,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 177,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6215,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 98,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6105,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 88,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5943,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 91,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5632,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 15,
+            "source": "MSFT_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.6414,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 5526,
+            "dropped_source": "MSFT_10-K_2024.htm",
+            "dropped_chunk_index": 188,
+            "dropped_score": 0.6399,
+            "duplicate_of_row": 5121,
+            "duplicate_of_source": "MSFT_10-K_2023.htm",
+            "duplicate_of_chunk_index": 177,
+            "similarity": 0.9911
+          }
+        ],
+        "dropped_count": 1
+      },
+      {
+        "query": "risks related to developing and deploying artificial intelligence",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6894,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 122,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.5479,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 124,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.5224,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 167,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5127,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 125,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.4981,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 52,
+            "source": "AAPL_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "KO",
+          "MSFT",
+          "AAPL"
+        ],
+        "unique_companies_in_topk": 3,
+        "first_correct_rank": 1,
+        "top_score": 0.6894,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 5068,
+            "dropped_source": "MSFT_10-K_2023.htm",
+            "dropped_chunk_index": 124,
+            "dropped_score": 0.6894,
+            "duplicate_of_row": 5460,
+            "duplicate_of_source": "MSFT_10-K_2024.htm",
+            "duplicate_of_chunk_index": 122,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 5070,
+            "dropped_source": "MSFT_10-K_2023.htm",
+            "dropped_chunk_index": 126,
+            "dropped_score": 0.5255,
+            "duplicate_of_row": 5462,
+            "duplicate_of_source": "MSFT_10-K_2024.htm",
+            "duplicate_of_chunk_index": 124,
+            "similarity": 0.9548
+          },
+          {
+            "dropped_row": 5461,
+            "dropped_source": "MSFT_10-K_2024.htm",
+            "dropped_chunk_index": 123,
+            "dropped_score": 0.5004,
+            "duplicate_of_row": 5069,
+            "duplicate_of_source": "MSFT_10-K_2023.htm",
+            "duplicate_of_chunk_index": 125,
+            "similarity": 0.9977
+          }
+        ],
+        "dropped_count": 3
+      },
+      {
+        "query": "our gaming business including Xbox consoles and content",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7312,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 53,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6972,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 54,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.658,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 65,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6485,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 49,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5515,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 350,
+            "source": "MSFT_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7312,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 5006,
+            "dropped_source": "MSFT_10-K_2023.htm",
+            "dropped_chunk_index": 62,
+            "dropped_score": 0.7284,
+            "duplicate_of_row": 5391,
+            "duplicate_of_source": "MSFT_10-K_2024.htm",
+            "duplicate_of_chunk_index": 53,
+            "similarity": 0.994
+          },
+          {
+            "dropped_row": 5007,
+            "dropped_source": "MSFT_10-K_2023.htm",
+            "dropped_chunk_index": 63,
+            "dropped_score": 0.6828,
+            "duplicate_of_row": 5392,
+            "duplicate_of_source": "MSFT_10-K_2024.htm",
+            "duplicate_of_chunk_index": 54,
+            "similarity": 0.9836
+          },
+          {
+            "dropped_row": 5394,
+            "dropped_source": "MSFT_10-K_2024.htm",
+            "dropped_chunk_index": 56,
+            "dropped_score": 0.651,
+            "duplicate_of_row": 5009,
+            "duplicate_of_source": "MSFT_10-K_2023.htm",
+            "duplicate_of_chunk_index": 65,
+            "similarity": 0.9877
+          }
+        ],
+        "dropped_count": 3
+      },
+      {
+        "query": "cybersecurity incidents and unauthorized access to our systems",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6954,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 158,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6857,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 173,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6676,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 100,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6571,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 163,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6472,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 169,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "MSFT",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 1,
+        "top_score": 0.6954,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3675,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 162,
+            "dropped_score": 0.6857,
+            "duplicate_of_row": 4393,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 173,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 4394,
+            "dropped_source": "KO_10-K_2024.htm",
+            "dropped_chunk_index": 174,
+            "dropped_score": 0.6549,
+            "duplicate_of_row": 3676,
+            "duplicate_of_source": "KO_10-K_2023.htm",
+            "duplicate_of_chunk_index": 163,
+            "similarity": 0.9971
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "foreign currency exchange rate fluctuations affecting results",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7285,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 158,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7087,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 374,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6954,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 160,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6868,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 307,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6843,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 373,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7285,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3661,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 148,
+            "dropped_score": 0.7285,
+            "duplicate_of_row": 4378,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 158,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3870,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 357,
+            "dropped_score": 0.7007,
+            "duplicate_of_row": 4594,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 374,
+            "similarity": 0.9759
+          },
+          {
+            "dropped_row": 3663,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 150,
+            "dropped_score": 0.6954,
+            "duplicate_of_row": 4380,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 160,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 3
+      },
+      {
+        "query": "climate change and environmental sustainability risks",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6657,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 679,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6516,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 699,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6506,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 179,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5848,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 162,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5831,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 191,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "KO",
+          "MSFT",
+          "KO"
+        ],
+        "unique_companies_in_topk": 3,
+        "first_correct_rank": 1,
+        "top_score": 0.6657,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3681,
+            "dropped_source": "KO_10-K_2023.htm",
+            "dropped_chunk_index": 168,
+            "dropped_score": 0.6506,
+            "duplicate_of_row": 4399,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 179,
+            "similarity": 1.0
+          }
+        ],
+        "dropped_count": 1
+      },
+      {
+        "query": "clinical trial results for our new oncology drug candidate",
+        "category": "out-of-corpus",
+        "expected_tickers": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.2549,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 513,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.2519,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1396,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.232,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 333,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.2278,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 341,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.2184,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 258,
+            "source": "JPM_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "JPM",
+          "MSFT",
+          "MSFT",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 3,
+        "first_correct_rank": null,
+        "top_score": 0.2549,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 4439,
+            "dropped_source": "KO_10-K_2024.htm",
+            "dropped_chunk_index": 219,
+            "dropped_score": 0.2549,
+            "duplicate_of_row": 4733,
+            "duplicate_of_source": "KO_10-K_2024.htm",
+            "duplicate_of_chunk_index": 513,
+            "similarity": 1.0
+          },
+          {
+            "dropped_row": 3388,
+            "dropped_source": "JPM_10-K_2024.htm",
+            "dropped_chunk_index": 1369,
+            "dropped_score": 0.2234,
+            "duplicate_of_row": 1896,
+            "duplicate_of_source": "JPM_10-K_2023.htm",
+            "duplicate_of_chunk_index": 1396,
+            "similarity": 0.9784
+          }
+        ],
+        "dropped_count": 2
+      },
+      {
+        "query": "aircraft fleet fuel hedging and aircraft lease obligations",
+        "category": "out-of-corpus",
+        "expected_tickers": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.463,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1286,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.4386,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1281,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.4343,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 329,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.4327,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 338,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.43,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 337,
+            "source": "MSFT_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "MSFT",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": null,
+        "top_score": 0.463,
+        "dropped_duplicates": [
+          {
+            "dropped_row": 3277,
+            "dropped_source": "JPM_10-K_2024.htm",
+            "dropped_chunk_index": 1258,
+            "dropped_score": 0.4388,
+            "duplicate_of_row": 1786,
+            "duplicate_of_source": "JPM_10-K_2023.htm",
+            "duplicate_of_chunk_index": 1286,
+            "similarity": 0.9666
+          },
+          {
+            "dropped_row": 5274,
+            "dropped_source": "MSFT_10-K_2023.htm",
+            "dropped_chunk_index": 330,
+            "dropped_score": 0.4303,
+            "duplicate_of_row": 5676,
+            "duplicate_of_source": "MSFT_10-K_2024.htm",
+            "duplicate_of_chunk_index": 338,
+            "similarity": 0.9657
+          }
+        ],
+        "dropped_count": 2
+      }
+    ]
+  },
+  "without_dedupe": {
+    "dedupe": false,
+    "k": 5,
+    "probe_count": 16,
+    "scored_probe_count": 14,
+    "hit_rate_at_1": 0.8571,
+    "hit_rate_at_3": 1.0,
+    "hit_rate_at_5": 1.0,
+    "mrr": 0.9048,
+    "total_duplicates_dropped": 0,
+    "out_of_corpus_top_scores": {
+      "clinical trial results for our new oncology drug candidate": 0.2549,
+      "aircraft fleet fuel hedging and aircraft lease obligations": 0.463
+    },
+    "mean_unique_companies_in_topk": 1.562,
+    "probes": [
+      {
+        "query": "risks from disruption of our supply chain and single source suppliers",
+        "category": "company-specific",
+        "expected_tickers": [
+          "AAPL"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7354,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 95,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7354,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 90,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6856,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 47,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6854,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 47,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.685,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 97,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "AAPL",
+          "AAPL",
+          "KO"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 3,
+        "top_score": 0.7354,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "dependence on outsourcing partners for manufacturing and assembly",
+        "category": "company-specific",
+        "expected_tickers": [
+          "AAPL"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.691,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 43,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6863,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 46,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6827,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 44,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6825,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 42,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6425,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 47,
+            "source": "AAPL_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "AAPL",
+          "AAPL",
+          "AAPL",
+          "AAPL",
+          "AAPL"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.691,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "risks relating to concentrate operations and independent bottling partners",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7657,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 133,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7657,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 123,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.7163,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 134,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.7163,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 124,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.7125,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 136,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7657,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "obesity concerns and changing consumer preferences about sugar sweetened beverages",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7433,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 105,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7181,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 113,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6869,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 239,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6868,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 251,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6573,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 238,
+            "source": "KO_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7433,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "water scarcity and poor water quality affecting our production",
+        "category": "company-specific",
+        "expected_tickers": [
+          "KO"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.575,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 188,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.575,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 178,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.5419,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 181,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.4868,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 184,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.4854,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 173,
+            "source": "KO_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.575,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "credit risk arising from wholesale and consumer lending portfolios",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7822,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 538,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7812,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1157,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.7812,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1188,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.7349,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 915,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.7349,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 944,
+            "source": "JPM_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7822,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "regulatory capital and liquidity requirements under Basel rules",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.688,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 448,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.688,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 467,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6761,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 19,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6656,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1318,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6558,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1319,
+            "source": "JPM_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.688,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "risks of operating broker dealer and market making businesses",
+        "category": "company-specific",
+        "expected_tickers": [
+          "JPM"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.5852,
+            "ticker": "AAPL",
+            "fiscal_year": 2024,
+            "chunk_index": 75,
+            "source": "AAPL_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.5852,
+            "ticker": "AAPL",
+            "fiscal_year": 2023,
+            "chunk_index": 72,
+            "source": "AAPL_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.5788,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 37,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5747,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 52,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5541,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 60,
+            "source": "JPM_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "AAPL",
+          "AAPL",
+          "JPM",
+          "JPM",
+          "JPM"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 3,
+        "top_score": 0.5852,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "competition in cloud computing and infrastructure services",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6414,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 177,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6399,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 188,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6215,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 98,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6105,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 88,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5943,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 91,
+            "source": "MSFT_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.6414,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "risks related to developing and deploying artificial intelligence",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6894,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 122,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6894,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 124,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.5479,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 124,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.5255,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 126,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5224,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 167,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "KO"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 1,
+        "top_score": 0.6894,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "our gaming business including Xbox consoles and content",
+        "category": "company-specific",
+        "expected_tickers": [
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7312,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 53,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7284,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 62,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6972,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 54,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6828,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 63,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.658,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 65,
+            "source": "MSFT_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7312,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "cybersecurity incidents and unauthorized access to our systems",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6954,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 158,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6857,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 173,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6857,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 162,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6676,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 100,
+            "source": "MSFT_10-K_2024.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6571,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 163,
+            "source": "KO_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "MSFT",
+          "KO"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": 1,
+        "top_score": 0.6954,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "foreign currency exchange rate fluctuations affecting results",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.7285,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 158,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.7285,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 148,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.7087,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 374,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.7007,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 357,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.6954,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 160,
+            "source": "KO_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "KO",
+          "KO",
+          "KO"
+        ],
+        "unique_companies_in_topk": 1,
+        "first_correct_rank": 1,
+        "top_score": 0.7285,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "climate change and environmental sustainability risks",
+        "category": "cross-company",
+        "expected_tickers": [
+          "AAPL",
+          "JPM",
+          "KO",
+          "MSFT"
+        ],
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.6657,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 679,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.6516,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 699,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.6506,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 179,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.6506,
+            "ticker": "KO",
+            "fiscal_year": 2023,
+            "chunk_index": 168,
+            "source": "KO_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.5848,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 162,
+            "source": "MSFT_10-K_2023.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "KO",
+          "KO",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 3,
+        "first_correct_rank": 1,
+        "top_score": 0.6657,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "clinical trial results for our new oncology drug candidate",
+        "category": "out-of-corpus",
+        "expected_tickers": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.2549,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 513,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.2549,
+            "ticker": "KO",
+            "fiscal_year": 2024,
+            "chunk_index": 219,
+            "source": "KO_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.2519,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1396,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.232,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 333,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.2278,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 341,
+            "source": "MSFT_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "KO",
+          "KO",
+          "JPM",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 3,
+        "first_correct_rank": null,
+        "top_score": 0.2549,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      },
+      {
+        "query": "aircraft fleet fuel hedging and aircraft lease obligations",
+        "category": "out-of-corpus",
+        "expected_tickers": null,
+        "retrieved": [
+          {
+            "rank": 1,
+            "score": 0.463,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1286,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 2,
+            "score": 0.4388,
+            "ticker": "JPM",
+            "fiscal_year": 2024,
+            "chunk_index": 1258,
+            "source": "JPM_10-K_2024.htm"
+          },
+          {
+            "rank": 3,
+            "score": 0.4386,
+            "ticker": "JPM",
+            "fiscal_year": 2023,
+            "chunk_index": 1281,
+            "source": "JPM_10-K_2023.htm"
+          },
+          {
+            "rank": 4,
+            "score": 0.4343,
+            "ticker": "MSFT",
+            "fiscal_year": 2023,
+            "chunk_index": 329,
+            "source": "MSFT_10-K_2023.htm"
+          },
+          {
+            "rank": 5,
+            "score": 0.4327,
+            "ticker": "MSFT",
+            "fiscal_year": 2024,
+            "chunk_index": 338,
+            "source": "MSFT_10-K_2024.htm"
+          }
+        ],
+        "tickers_in_topk": [
+          "JPM",
+          "JPM",
+          "JPM",
+          "MSFT",
+          "MSFT"
+        ],
+        "unique_companies_in_topk": 2,
+        "first_correct_rank": null,
+        "top_score": 0.463,
+        "dropped_duplicates": [],
+        "dropped_count": 0
+      }
+    ]
+  },
+  "dedupe_effect": {
+    "total_duplicates_dropped": 33,
+    "probes_affected": 16,
+    "probes_with_changed_topk": 7,
+    "mean_unique_companies_dedupe_off": 1.562,
+    "mean_unique_companies_dedupe_on": 1.625,
+    "hit_rate_at_5_off": 1.0,
+    "hit_rate_at_5_on": 1.0,
+    "mrr_off": 0.9048,
+    "mrr_on": 0.9286
+  }
+}

@@ -1024,7 +1024,294 @@ k=5 default is doing real work.
   is persisted. The variation is scheduling noise at this scale and carries no
   information.
 
-## Phase 6 — Retrieval and RAG answer generation
+## Phase 6 — RAG generation chain
+
+Sources: `results/rag_smoke_test.json` (behavioural inspection),
+`results/judge_validation.json` (judge validation against human labels).
+Produced by `src/rag/chain.py`, `src/rag/ask.py`, `src/rag/judge.py`,
+`src/rag/smoke_test.py`. Guarded by `tests/test_rag_chain.py` and
+`tests/test_judge.py` (86 tests, no API calls).
+
+First phase that calls an LLM. Provider: Google Gemini via
+`langchain-google-genai`.
+
+### Chain design
+
+`RAGChain.answer()` composes the Phase 5 retriever with Gemini and returns a
+structured result: answer text, retrieved chunks with full citation metadata and
+scores, which chunk numbers the model cited, model used, whether context was
+supplied, retrieval score summary, and latency.
+
+**Citations are by number only.** The model sees excerpts labelled `[1]`..`[k]`
+with company, form type and fiscal year, and cites `[2][4]`. Accession numbers,
+EDGAR URLs and character spans are never sent to it — they are resolved from
+retriever metadata afterwards. Asking a model to reproduce an identifier like
+`0000320193-24-000123` invites transcription error, and a subtly wrong accession
+number is worse than none: it looks authoritative and resolves to nothing. A test
+asserts no accession number or URL appears in the assembled context.
+
+**Citations outside the supplied range are counted, not dropped.** A model citing
+`[7]` when 5 excerpts were given has invented a source; that is a hallucination
+signal in its own right.
+
+**A `.content` note.** LangChain returns Gemini responses as a *list of content
+blocks*, verified live during this phase:
+`[{'type': 'text', 'text': 'OK', 'extras': {...}}]`. Calling `.strip()` on it
+raises `AttributeError`. Every response is read through `extract_text()` from
+`src/utils.py`, and the test double returns the same list-of-blocks shape so a
+regression to string-assumption fails a test rather than production.
+
+### Refusal is semantic, and Phase 5's evidence is why
+
+Refusal is delegated to the model at the prompt level rather than gated on a
+retrieval-score threshold. Phase 5 measured why a threshold cannot work here: the
+highest out-of-corpus probe scored **0.4630** while the lowest legitimate top-1
+scored **0.5750** — a 0.1120 margin estimated from 16 probes. A 0.50 cutoff
+admits the out-of-corpus query; a 0.60 cutoff refuses a legitimate one.
+
+Scores are still recorded on every result (`max_score`, `mean_score`) so Phase 7
+can test post-hoc whether score correlates with refusal, but nothing is gated on
+them. A test asserts a chunk scoring 0.11 still produces an answer.
+
+**This was validated empirically.** The aircraft question — absent from the
+corpus, but semantically adjacent to JPMorgan's lease and hedging disclosures —
+retrieved at **max score 0.4971**, squarely inside the ambiguous band where a
+threshold would have failed in either direction. The model refused anyway, on the
+text rather than the score.
+
+### Behavioural smoke test (6 questions, both arms)
+
+Qualitative inspection, not measurement: one run, no rubric beyond the judge, no
+hallucination rate. All corpus-answerable questions are scoped to a single
+company per the Phase 5 finding that cross-company retrieval collapses to one
+filer.
+
+| question | category | RAG | no-context baseline |
+|---|---|---|---|
+| aapl_supply_chain | answerable | ANSWERED | ANSWERED |
+| ko_water | answerable | ANSWERED | ANSWERED |
+| msft_ai | answerable | ANSWERED | ANSWERED |
+| absent_aircraft | absent from corpus | **REFUSED** | REFUSED |
+| adversarial_table_figure | table figure | **REFUSED** | ANSWERED |
+| out_of_corpus_company | company not in corpus | **REFUSED** | ANSWERED |
+
+Clean separation on the RAG arm: every answerable question answered with
+resolving citations, every unanswerable one refused. **Zero invalid citations**
+across all six RAG answers — the model never cited an excerpt it was not given.
+
+### Fabrication evidence — the same question answered twice, differently
+
+The adversarial question asks for a figure from a financial table. Phase 4
+established that table structure is destroyed during HTML extraction, so the
+retrieved text contains bare digits stripped of their row and period labels.
+
+| arm | answer |
+|---|---|
+| RAG | "The provided excerpts do not contain JPMorgan's exact total allowance for lending-related commitments at the end of 2023." |
+| no-context, run 1 | **"$706 million"** |
+| no-context, run 2 | **"$596 million"** |
+
+Two runs of the identical question, with no context, produced **two different
+dollar figures** — each stated bare, with no source, no hedge, and no
+acknowledgement of uncertainty. Neither is traceable to anything.
+
+This is the clearest hallucination evidence the project has produced, and it is
+sharper than a single fabricated figure would be: one wrong number could be a
+stale memory of a real value, but two different confident numbers for the same
+question demonstrate the value is being *generated* rather than recalled. The RAG
+arm refused the same question both times.
+
+That the variation is visible at all is a consequence of the pinned model
+ignoring temperature (below) — a limitation that here produced useful evidence.
+
+### The Tesla case — grounding against strong pretraining knowledge
+
+Tesla is not in the corpus, but the model has substantial pretraining knowledge of
+Tesla's risk factors. This is the sharpest test of whether the system stays
+grounded.
+
+| arm | response |
+|---|---|
+| RAG | "The provided excerpts do not contain information about Tesla or its disclosures regarding battery supply and raw material sourcing." (max retrieval score 0.4620) |
+| no-context | **2,022 characters** of detailed, plausible, entirely ungrounded Tesla risk factors |
+
+The baseline is not wrong in any obvious way — it names real suppliers and real
+raw materials. It is simply unsourced, and nothing in it can be verified against
+the corpus. That is the failure mode RAG exists to prevent.
+
+### Two defects caught and fixed before Phase 7
+
+Both were measurement-instrument bugs that would have confounded Phase 7's
+results rather than merely degrading them.
+
+**1. The model was resolved per call, not per experiment.** Free-tier rate
+limiting on `gemini-3.5-flash` caused 9 of 12 calls to fall back to
+`gemini-3.5-flash-lite` at different points, so **3 of 6 question pairs compared a
+RAG answer from one model against a baseline answer from another**. Any measured
+difference would have been partly a model difference. Fixed by resolving the model
+once per experiment (`config.EXPERIMENT_MODEL`) and disabling per-call fallback on
+batch paths; interactive use keeps fallback. The run now asserts model parity
+**before writing results** and raises `MixedModelRun` otherwise — a silently mixed
+run is worse than a failed one, because nothing in the output would reveal it.
+
+**2. Refusal detection was keyword matching, and it missed refusals.** The
+original substring list failed on
+
+> "Based on the provided context, there are no disclosures regarding aircraft
+> fleet fuel hedging or aircraft lease obligations."
+
+and, after the judge was introduced, on a second phrasing neither the keyword list
+nor its author anticipated:
+
+> "Please provide the specific SEC filings (or company name, filing type, and
+> period) you would like me to analyze, as none were specified in your prompt."
+
+The second is a refusal expressed as a **request for input** — no negation, no
+"does not contain", nothing a substring list could catch. Every such miss biases
+the same direction, understating refusals and overstating the answer rate in
+exactly the comparison Phase 7 exists to make. Replaced with an LLM judge
+(below); the keyword detector is retained as a cheap secondary signal, and
+disagreements are counted.
+
+**A third defect surfaced while fixing these.** The first pinned run failed 4 of
+12 generation calls with `RESOURCE_EXHAUSTED`. The 429 payload gave the cause:
+free-tier quota is **15 requests/minute per model**, and the run issued 24 calls
+(12 generation + 12 judge) with no pacing, while the retry backoff was 1s/2s/4s
+against a per-minute window that reported "retry in 55s". A 4-second maximum
+backoff cannot clear a per-minute quota at any retry count. Fixed with a
+process-wide rate limiter shared by generation and judging (they compete for the
+same quota) and by honouring the server's stated `retryDelay`. The re-run
+completed **12 of 12 with zero failures**.
+
+### Model pinning — a trade-off worth stating
+
+`EXPERIMENT_MODEL = "gemini-3.5-flash-lite"`.
+
+| model | honours `temperature=0` | free-tier headroom |
+|---|---|---|
+| `gemini-3.5-flash` | yes | low — 9 of 12 calls fell back |
+| `gemini-3.5-flash-lite` | **no** — "uses fixed sampling defaults" | high |
+
+Verified against the installed client. Pinning flash-lite means **`LLM_TEMPERATURE`
+has no effect and experiment output is not deterministic** — which is why the
+adversarial question produced $706 million on one run and $596 million on the
+next.
+
+Pinned anyway. Sampling variance is *random* noise that repeated runs can
+quantify; mixed-model comparison is a *systematic* confound that cannot be
+corrected after the fact. Choosing the model that completes a batch run without
+falling back is what makes pinning possible at all. If Phase 7 needs determinism
+more than throughput, pinning `gemini-3.5-flash` is the alternative, accepting
+that rate limits may abort runs — which now fails loudly rather than silently
+mixing.
+
+### Judge validation against human labels
+
+Source: `results/judge_validation.json`.
+
+The judge classifies a response as REFUSED / ANSWERED / PARTIAL using structured
+output (`json_schema` mode), returning a verdict plus a one-sentence
+justification so verdicts are spot-checkable rather than opaque.
+
+**Rubric — three categories:**
+
+| label | definition |
+|---|---|
+| REFUSED | Declines to provide the requested information. **Includes** answers that decline by asking the user to supply documents, specify a company, or restate the question — a request for input in place of an answer is a refusal. |
+| ANSWERED | Provides a substantive answer to what was asked. |
+| PARTIAL | Answers some of the question, or hedges while still supplying substantive content. |
+
+**CLARIFICATION was deliberately not added as a fourth category.** The
+"please provide the specific SEC filings" response was the candidate for it, but
+the judge had already classified that row as REFUSED with defensible reasoning.
+Introducing a category after seeing the judge's output would have manufactured
+disagreement on a row it got right — fitting the rubric to the result. Instead the
+edge case was written into the REFUSED definition so both raters apply the same
+rule.
+
+**Labelling was blind.** The template carried only row id, arm, question and
+answer. The judge's verdict and justification were stripped; a rater who can see
+the judge's answer anchors to it, and agreement between an anchored rater and the
+source of the anchor measures nothing. Blindness was verified by leak audit
+(no `judge_verdict`, no `justification`, none of the 12 justification strings
+present in the file) and is enforced permanently by
+`test_judge_verdict_is_not_present_anywhere`. Verdicts were rejoined by row id at
+scoring time.
+
+**Results, n = 12:**
+
+| scoring | exact agreement | Cohen's kappa |
+|---|---|---|
+| 3-class (REFUSED / ANSWERED / PARTIAL) | 11/12 (91.7%) | 0.8333 |
+| **binary (PARTIAL collapsed into ANSWERED)** | **12/12 (100%)** | **1.0000** |
+
+Label distributions, 3-class:
+
+| label | human | judge |
+|---|---|---|
+| REFUSED | 4 | 4 |
+| ANSWERED | 7 | 8 |
+| PARTIAL | 1 | 0 |
+
+Kappa is the general multi-class form, cross-checked against
+`sklearn.metrics.cohen_kappa_score` on 3-class data and pinned as a regression
+test — it is not a binary special case.
+
+**Phase 7 will use the binary collapse as its primary scoring axis.** The question
+there is whether the model asserted something checkable or declined to assert
+anything; a PARTIAL response still asserts content that can be evaluated for
+groundedness, so it belongs with ANSWERED. The 3-class figures are retained
+because the finer distinction is informative about answer *quality* even though it
+is not the hallucination axis.
+
+**The single disagreement, in full:**
+
+| field | value |
+|---|---|
+| row | `ko_water::with_context` (RAG arm) |
+| human | PARTIAL |
+| judge | ANSWERED |
+| answer | "Based on the provided excerpts, Coca-Cola describes the risk of water scarcity in the following ways: * Water is a main ingredient in substantially all of Coca-Cola's products… As water becomes scarcer and its quality deteriorates, the Coca-Cola system may incur higher costs, face capacity constraints, and experience reputational damage… * Climate change may exacerbate extreme weather, resulting in water scarcity or flooding…" (1,046 chars, cited [1] and [3]) |
+
+**This was a PARTIAL/ANSWERED boundary case, not a refusal-detection error.** Both
+raters agreed the model answered rather than declined; they differed only on
+whether the answer was complete enough to count as full. The confusion matrix
+shows this directly: the REFUSED row and column are perfectly diagonal (4 human
+REFUSED, 4 judge REFUSED, zero cross-classification), and the only off-diagonal
+cell is human PARTIAL → judge ANSWERED. The disagreement disappears entirely under
+the binary collapse, which is the axis Phase 7 scores on.
+
+The human's PARTIAL boundary appears **stricter** than the judge's — the human
+used PARTIAL once where the judge used it zero times. Whether that is a systematic
+tendency cannot be determined from a single instance; it would take a validation
+set with many genuinely borderline answers to establish, and this set has one.
+
+### Limitations
+
+- **An LLM grading an LLM is not independent measurement.** This judge is Gemini
+  classifying Gemini, within the same model family, sharing training data,
+  tokenizer and failure modes. Three specific concerns: **correlated blind spots**
+  — a phrasing the answering model produces because of a training quirk is one the
+  judge may misread for the same reason, so errors are not independent of what is
+  being measured; **no ground truth** — the judge's output is another model's
+  opinion, cheaper and more consistent than keyword matching but not more
+  authoritative; and **known self-preference effects**, where models rate outputs
+  from their own family more favourably. Refusal-vs-answer is less exposed to
+  self-preference than quality judging, but it is not immune.
+- **n = 12 is indicative, not established.** The tool itself prints a caveat below
+  20 labelled rows. Kappa on 12 observations has a wide confidence interval, and
+  the label distribution is skewed toward obvious cases (4 clear refusals, 7 clear
+  answers, 1 genuinely borderline). A binary kappa of 1.0000 on this set means
+  "no detected disagreement on easy cases", not "perfect agreement".
+- **The same person wrote the questions, the judge prompt and the human labels.**
+  This validates internal consistency far more than external validity. A rater who
+  wrote the rubric applies it the way its author intended; an independent rater
+  might not. Genuine validation would need labels from someone who did not build
+  the system, on questions they did not write.
+- **The smoke test is inspection, not measurement.** Six questions, one run, no
+  repeated trials. Nothing in it is a hallucination rate.
+
+## Phase 7 — RAG evaluation (hallucination rate, RAG vs no-RAG)
 
 *Not started.*
 

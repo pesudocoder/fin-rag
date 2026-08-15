@@ -1,0 +1,96 @@
+{
+  "phase": "6-judge-validation",
+  "purpose": "Human validation of the LLM refusal judge. Without this the judge is an instrument with no known error rate.",
+  "judge_model": "gemini-3.5-flash-lite",
+  "judge_prompt_version": "v1",
+  "labels_file": "labels.csv",
+  "results_file": "C:\\Users\\Kevin Pereira\\Desktop\\fin-rag\\results\\rag_smoke_test.json",
+  "rubric": {
+    "REFUSED": "Declines to provide the requested information. INCLUDES answers that decline by asking you to supply documents, specify a company, or restate the question - a request for input in place of an answer is a refusal.",
+    "ANSWERED": "Provides a substantive answer to what was asked.",
+    "PARTIAL": "Answers some of the question, or hedges while still supplying substantive content."
+  },
+  "rubric_note": "Three categories, not four. A CLARIFICATION category was considered for a response that declined by asking for documents, but the judge already classified that as REFUSED on defensible grounds. Adding a category after seeing the judge's output would manufacture disagreement on a row it got right.",
+  "blind_labelling": "The template carried id, arm, question and answer only. The judge's verdict and justification were stripped and their absence verified by audit and by a permanent test; verdicts were rejoined by row id at scoring time.",
+  "limitation": "LLM-as-judge is not independent measurement: Gemini grading Gemini shares training data and failure modes. n=12 is indicative, not established. The same person wrote the questions, the judge prompt and the human labels.",
+  "labelled_rows": 12,
+  "three_class": {
+    "n": 12,
+    "exact_agreement": 11,
+    "agreement_rate": 0.9167,
+    "cohens_kappa": 0.8333,
+    "human_distribution": {
+      "REFUSED": 4,
+      "ANSWERED": 7,
+      "PARTIAL": 1
+    },
+    "judge_distribution": {
+      "REFUSED": 4,
+      "ANSWERED": 8,
+      "PARTIAL": 0
+    },
+    "confusion_matrix": {
+      "REFUSED": {
+        "REFUSED": 4,
+        "ANSWERED": 0,
+        "PARTIAL": 0
+      },
+      "ANSWERED": {
+        "REFUSED": 0,
+        "ANSWERED": 7,
+        "PARTIAL": 0
+      },
+      "PARTIAL": {
+        "REFUSED": 0,
+        "ANSWERED": 1,
+        "PARTIAL": 0
+      }
+    },
+    "confusion_matrix_note": "matrix[human_label][judge_label] = count"
+  },
+  "binary": {
+    "n": 12,
+    "exact_agreement": 12,
+    "agreement_rate": 1.0,
+    "cohens_kappa": 1.0,
+    "human_distribution": {
+      "REFUSED": 4,
+      "ANSWERED": 8
+    },
+    "judge_distribution": {
+      "REFUSED": 4,
+      "ANSWERED": 8
+    },
+    "confusion_matrix": {
+      "REFUSED": {
+        "REFUSED": 4,
+        "ANSWERED": 0
+      },
+      "ANSWERED": {
+        "REFUSED": 0,
+        "ANSWERED": 8
+      }
+    },
+    "confusion_matrix_note": "matrix[human_label][judge_label] = count"
+  },
+  "binary_collapse_rule": {
+    "REFUSED": "REFUSED",
+    "ANSWERED": "ANSWERED",
+    "PARTIAL": "ANSWERED"
+  },
+  "primary_axis_for_phase_7": "binary",
+  "disagreements": [
+    {
+      "id": "ko_water::with_context",
+      "arm": "RAG",
+      "question": "How does Coca-Cola describe the risk of water scarcity to its business?",
+      "answer": "Based on the provided excerpts, Coca-Cola describes the risk of water scarcity in the following ways:\n\n* Water is a main ingredient in substantially all of its products, vital to producing agricultural ingredients, needed in the manufacturing process, and critical to the prosperity of communities and ecosystems where the company operates [1].\n* Water is a limited resource facing challenges such as overexploitation, increasing demand for food and consumer/industrial products, increasing pollution, poor management, lack of access, sociopolitical tensions, and the effects of climate change [1]. Climate change may also exacerbate extreme weather, resulting in water scarcity, flooding, or deteriorated water quality, which could limit water availability for bottling operations [3].\n* As water becomes scarcer, demand increases, and water quality deteriorates, the Coca-Cola system may incur higher costs, face capacity constraints, and experience the possibility of reputational damage, all of which could adversely affect profitability [1].",
+      "human": "PARTIAL",
+      "judge": "ANSWERED",
+      "collapses_under_binary": true
+    }
+  ],
+  "exact_agreement": 11,
+  "agreement_rate": 0.9167,
+  "cohens_kappa": 0.8333
+}

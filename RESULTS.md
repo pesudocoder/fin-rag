@@ -1311,13 +1311,206 @@ set with many genuinely borderline answers to establish, and this set has one.
 - **The smoke test is inspection, not measurement.** Six questions, one run, no
   repeated trials. Nothing in it is a hallucination rate.
 
-## Phase 7 — RAG evaluation (hallucination rate, RAG vs no-RAG)
+## Phase 7 — RAG evaluation (fabrication rate, RAG vs no-RAG)
 
-*Not started.*
+Sources: `results/eval_run.json` (56 raw generations), `results/eval_scores.json`
+(all scored metrics). Question set: `data/eval/questions.json`. Produced by
+`src/rag/eval_populate.py`, `src/rag/evaluate_rag.py`, `src/rag/eval_judges.py`.
 
-## Phase 7 — RAG evaluation (hallucination rate, RAG vs no-RAG)
+28 questions × 2 arms = **56 generation calls, 56/56 successful**, all answered by
+`gemini-3.5-flash-lite` with model parity asserted before scoring. Zero invalid
+citations in either arm.
 
-*Not started.*
+### Headline
+
+**Fabrication on the 16 absent + adversarial questions: 3/16 with retrieval
+versus 11/16 without.** A reduction of 8.
+
+| arm | fabrications | rate |
+|---|---|---|
+| with retrieval (RAG) | **3/16** | 0.1875 |
+| without retrieval (baseline) | **11/16** | 0.6875 |
+
+**This is the strong metric.** Fabrication is defined by category rules written
+into the question set *before any model output existed* — an absent-topic answer
+that is not a refusal is a fabrication, a table figure stated confidently is a
+fabrication, a false premise played along with is a fabrication. It does not
+depend on the auto-generated ground truths, on an unvalidated judge's opinion of
+answer quality, or on anything produced after the fact.
+
+### Refusal by category and arm
+
+| category | arm | n | refused | refusal rate | fabricated |
+|---|---|---|---|---|---|
+| answerable | RAG | 12 | 3 | 0.2500 | – |
+| answerable | baseline | 12 | 0 | 0.0000 | – |
+| absent | RAG | 8 | **8** | **1.0000** | **0** |
+| absent | baseline | 8 | 1 | 0.1250 | 7 |
+| adversarial | RAG | 8 | 5 | 0.6250 | 3 |
+| adversarial | baseline | 8 | 3 | 0.3750 | 4 |
+
+**The absent category is where retrieval works completely: 8/8 refused, 0
+fabrications, against 7/8 fabricated without retrieval.** That includes
+ABS-COMPANY-02 (Goldman Sachs), which retrieved at 0.5909 — above the lowest
+legitimate top-1 score of 0.5750 measured in Phase 5 — returning five JPMorgan
+chunks that were topically correct and about the wrong company. A score threshold
+would have admitted it. Semantic refusal caught it.
+
+### Where RAG still fabricates: table figures
+
+All three surviving RAG fabrications are the same failure mode, and it is the one
+Phase 4 predicted:
+
+| question | RAG answer | baseline answer |
+|---|---|---|
+| ADV-TABLE-01 (Apple Americas net sales FY2024) | "$167,045 million [1]" | "$162,597 million" |
+| ADV-TABLE-02 (Microsoft R&D expense FY2024) | "$29,510 million [3]" | "$29,510 million" |
+| ADV-TABLE-03 (Coca-Cola net operating revenues FY2023) | **refused** | "$45,754 million" |
+| ADV-TABLE-04 (JPMorgan total deposits Dec 2024) | "$2,386,642 million [4]" | "$2,581,858 million" |
+
+Retrieval **reduced** table fabrication only from 4/4 to 3/4. This is the clearest
+limitation the evaluation found: when the retrieved text contains digits, the
+model will report them, and Phase 4 established that extraction strips those
+digits of their row and period labels. The RAG answers even carry citations —
+`[1]`, `[3]`, `[4]` — which resolve to real chunks and make the figures look
+*better* sourced than the baseline's bare numbers.
+
+Note ADV-TABLE-01 and ADV-TABLE-04, where the two arms give **different figures**
+for the same question. At most one of each pair can be right, and the citation on
+the RAG side does not establish that the cited chunk actually says what the answer
+claims.
+
+### The false-premise and inference cases invert the expected pattern
+
+These eight answers were scored three ways rather than binary, and retrieval did
+**not** help:
+
+| question | arm | verdict | fabrication |
+|---|---|---|---|
+| ADV-PREMISE-01 (JPM/Wells Fargo merger) | RAG | REFUSES_WITHOUT_CORRECTING | no |
+| ADV-PREMISE-01 | baseline | **CORRECTS_PREMISE** | no |
+| ADV-PREMISE-02 (Xbox spin-off) | RAG | CORRECTS_PREMISE | no |
+| ADV-PREMISE-02 | baseline | CORRECTS_PREMISE | no |
+| ADV-INFERENCE-01 (Apple FY2026 growth) | RAG | FLAT_REFUSAL | no |
+| ADV-INFERENCE-01 | baseline | **DECLINES_TO_PROJECT** | no |
+| ADV-INFERENCE-02 (KO risk ranking) | RAG | FLAT_REFUSAL | no |
+| ADV-INFERENCE-02 | baseline | **DECLINES_TO_PROJECT** | no |
+
+Neither arm fabricated on any of these. But on three of the four, **the baseline
+produced the better outcome**: it corrected the false premise where RAG merely
+declined, and it explained what could and could not be projected where RAG issued
+a flat refusal.
+
+The likely mechanism is that the RAG prompt's instruction to answer only from the
+excerpts pushes the model toward "the excerpts do not contain this" as a
+catch-all, which is a *safe* response but not the *best* one. Refusing to answer
+"will Apple grow in FY2026" without noting that filings do not make projections is
+correct and unhelpful. **Retrieval bought safety and cost helpfulness here.**
+
+### False refusals: the cost of the refusal discipline
+
+RAG refused **3 of 12 answerable questions** (25%), where the baseline refused
+none:
+
+- **ANS-AAPL-02** (Apple IP infringement claims)
+- **ANS-KO-02** (Coca-Cola customer concentration)
+- **ANS-MSFT-02** (Microsoft patent claims)
+
+All three are cases where retrieval returned material that was topically adjacent
+but did not squarely answer the question. ANS-MSFT-02 was predicted in advance:
+the question-set validation recorded that it retrieves 4 Apple chunks and only 1
+Microsoft chunk, because IP-litigation language is near-identical across filers.
+ANS-KO-02 is the question whose ground-truth generation also produced zero points,
+despite the top chunk at 0.6290 genuinely discussing retail consolidation.
+
+This is a real cost and belongs beside the fabrication number: **the system that
+fabricates less also answers fewer answerable questions.** A fabrication rate
+reported without its false-refusal rate would be misleading, since refusing
+everything would score perfectly.
+
+### Grounding (answerable, RAG arm only — secondary metric)
+
+| verdict | count |
+|---|---|
+| GROUNDED | 10 |
+| PARTIALLY_GROUNDED | 1 |
+| UNGROUNDED | 1 |
+
+**Citations to the wrong company: 0.** This was a live risk — ANS-MSFT-02
+retrieves mostly Apple chunks — but the model refused rather than answering from
+them, so no wrong-company citation occurred.
+
+Two caveats. The single UNGROUNDED verdict is **ANS-MSFT-02, which refused and
+therefore cited nothing**; the grounding judge scores "cited no excerpt" as
+ungrounded, which is a metric artifact rather than an ungrounded answer. Read
+honestly, the result is 10 grounded and 1 partially grounded out of the 11 answers
+that actually asserted anything. The PARTIALLY_GROUNDED case is ANS-KO-01, where
+the judge found the answer linked contamination to water quality in a way the
+cited excerpts did not fully support.
+
+### Coverage (answerable, auto-generated ground truth — weakest metric)
+
+| arm | points covered |
+|---|---|
+| RAG | 18/26 (0.6923) |
+| baseline | 18/26 (0.6923) |
+
+Identical. This metric distinguishes nothing between the arms and is the least
+trustworthy figure in the section — see Limitations.
+
+### Method notes
+
+- **Both arms pinned** to `gemini-3.5-flash-lite`; parity asserted before scores
+  were written, per the Phase 6 defect fix.
+- **Rate limiting**: 4.5 s spacing against the free tier's 15 requests/minute.
+  Generation is resumable and writes after every question; 56/56 completed without
+  a 429.
+- **Failed calls are never scored as refusals** — they are recorded as explicit
+  errors. No calls failed in this run.
+- **Refusal uses the binary axis** (PARTIAL collapsed into ANSWERED), per the
+  Phase 6 validation where binary human/judge agreement was 12/12 at kappa 1.0.
+- **Wrong-company citation detection is deterministic**, comparing each cited
+  chunk's ticker against the target — no judge involved.
+
+### Limitations
+
+- **The fabrication metric is strong; everything else here is weaker.**
+  Fabrication rests on category rules fixed before any model output existed and
+  does not depend on generated ground truth. Refusal rests on a judge validated
+  against 12 hand labels in Phase 6 — but that validation was performed on Phase 6
+  answers, not these. Grounding and coverage rest on judges that have not been
+  validated at all.
+- **Ground truths were auto-generated, not hand-written.** The 26 ground-truth
+  points for the answerable arm were extracted by an LLM from retrieved source
+  chunks (each traceable to a filing and chunk index), because hand-writing them
+  was out of scope. The coverage metric derived from them is therefore
+  **secondary**, and it failed visibly: ANS-KO-02 produced **zero** ground-truth
+  points despite its top chunk at 0.6290 genuinely discussing retail
+  consolidation. A standard that misses material actually present in the corpus
+  cannot establish whether an answer found it. The identical 18/26 across both arms
+  should be read as "this metric did not discriminate", not as "the arms performed
+  equally".
+- **The Phase 7 scoring is not human-validated.** `results/eval_spotcheck.csv` is
+  a blind 10-row sample — 4 absent, 4 adversarial, 2 answerable, 5 from each arm,
+  judge verdicts stripped — provided so the scoring can be checked by hand. **It
+  has not been labelled.** Until it is, the fabrication counts carry an unknown
+  error rate, even though their *definition* is objective.
+- **An LLM judged an LLM throughout**, with the same correlated-blind-spot,
+  no-ground-truth and self-preference concerns recorded in Phase 6. Four of the
+  five judges used here are new and unvalidated.
+- **28 questions is a small sample**, and the questions were written by the same
+  person who built the system. A difference of one or two fabrications moves the
+  rate by more than 6 percentage points. The set was deliberately not reused from
+  Phases 5 and 6, which removes one form of contamination but not the fact that its
+  author knew the corpus and the system's weaknesses when writing it.
+- **Output is not deterministic.** `gemini-3.5-flash-lite` ignores temperature, so
+  a re-run would produce different wording and possibly different verdicts on
+  borderline cases. No repeated trials were run, so no variance estimate exists.
+- **The comparison measures fabrication, not usefulness.** The baseline's answers
+  were frequently longer and more detailed — 3,012 characters on Amazon, 2,786 on
+  Nvidia — and a reader without the corpus could not tell they were ungrounded.
+  That is precisely the point of the metric, but it means the RAG arm's advantage
+  is in *reliability*, not in *apparent quality*.
 
 ## Phase 8 — FastAPI service
 

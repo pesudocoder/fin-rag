@@ -1,0 +1,1316 @@
+{
+  "phase": "7-eval-question-set",
+  "status": "POPULATED - expected_behaviour deterministic; answerable ground truths auto-generated",
+  "corpus": "8 10-K filings: AAPL, JPM, KO, MSFT, FY2023 and FY2024",
+  "counts": {
+    "total": 28,
+    "answerable": 12,
+    "absent": 8,
+    "adversarial": 8
+  },
+  "design_constraints": {
+    "single_company_scope": "Every answerable question targets ONE company. Phase 5 measured mean unique companies in the top-5 at 1.625, and cross-company probes collapsed onto a single filer (the FX probe returned 5 Coca-Cola chunks). A comparative question would fail at retrieval, so it would measure a retrieval limitation rather than grounding.",
+    "no_table_figures_in_answerable": "Phase 4 destroys table structure during HTML extraction, so figures reach the model stripped of row and period labels. Figure questions are therefore legitimately unanswerable and are placed in the adversarial category, not the answerable one.",
+    "no_reuse": "No question reuses a Phase 5 retrieval probe or a Phase 6 smoke-test question. Those informed the design and tuning of the system; evaluating on them would be testing against data the system was fitted to.",
+    "phrasing_variation": "Roughly half the answerable questions use the filings' own vocabulary and half are paraphrased into plain language, so retrieval is not only tested on keyword overlap."
+  },
+  "questions": [
+    {
+      "id": "ANS-AAPL-01",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What does Apple say about regulatory scrutiny of how it distributes apps and the terms it sets for third-party developers?",
+      "target_ticker": "AAPL",
+      "phrasing": "paraphrased",
+      "rationale": "Apple's 10-K devotes substantial risk-factor text to App Store distribution terms, developer relations, and regulatory action such as the Digital Markets Act. Paraphrased away from the filing's own wording to avoid pure keyword matching.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "The Company is subject to antitrust investigations in Europe and other jurisdictions relating to App Store terms and conditions.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "source_chunk_index": 85,
+            "source_char_start": 75663,
+            "source_char_end": 76649,
+            "source_score": 0.7163
+          },
+          {
+            "point": "The Company expects to make further business changes in the future, including as a result of legislative initiatives impacting the App Store, such as the EU Digital Markets Act.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "source_chunk_index": 84,
+            "source_char_start": 74523,
+            "source_char_end": 75695,
+            "source_score": 0.6931
+          },
+          {
+            "point": "The Commission announced formal noncompliance investigations against the Company under the DMA concerning how developers may communicate and promote offers to end users and conclude contracts.",
+            "source_excerpt": 8,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "source_chunk_index": 113,
+            "source_char_start": 96276,
+            "source_char_end": 97194,
+            "source_score": 0.6644
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 85,
+            "score": 0.7163
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 84,
+            "score": 0.6931
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 58,
+            "score": 0.6848
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 61,
+            "score": 0.679
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 58,
+            "score": 0.6729
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 87,
+            "score": 0.6684
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 91,
+            "score": 0.6656
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 113,
+            "score": 0.6644
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "AAPL",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-AAPL-02",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What risks does Apple disclose relating to intellectual property infringement claims brought against it?",
+      "target_ticker": "AAPL",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Apple discloses IP infringement claims as a standing risk factor. Uses the filing's own terminology.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Many of the Company\u2019s competitors seek to compete primarily through aggressive pricing and very low cost structures, and by imitating the Company\u2019s products and infringing on its intellectual property.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "source_chunk_index": 38,
+            "source_char_start": 33736,
+            "source_char_end": 34552,
+            "source_score": 0.7507
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 38,
+            "score": 0.7507
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 91,
+            "score": 0.7357
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 77,
+            "score": 0.7056
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 85,
+            "score": 0.7049
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 71,
+            "score": 0.6975
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 84,
+            "score": 0.6972
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 51,
+            "score": 0.6815
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 90,
+            "score": 0.6702
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "AAPL",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-AAPL-03",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "How dependent is Apple on carriers, resellers and other wholesale channel partners, and what could go wrong there?",
+      "target_ticker": "AAPL",
+      "phrasing": "paraphrased",
+      "rationale": "Apple's risk factors cover distribution through cellular carriers and wholesale channel partners, including their credit and inventory risk. Deliberately avoids the Phase 5/6 supply-chain and outsourcing-partner topics.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Carriers providing cellular network service offer financing, installment payment plans, or subsidies for purchases of Apple devices, but there is no assurance these offers will continue at all or in the same amounts.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "source_chunk_index": 64,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.7356
+          },
+          {
+            "point": "Resellers' financial conditions could weaken, they could stop distributing Apple's products, or uncertainty regarding demand could cause them to reduce their ordering and marketing.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "source_chunk_index": 64,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.7356
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 64,
+            "score": 0.7356
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 67,
+            "score": 0.6558
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 98,
+            "score": 0.6499
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "AAPL_10-K_2023.htm",
+            "chunk_index": 45,
+            "score": 0.6371
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 58,
+            "score": 0.6298
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 76,
+            "score": 0.6241
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 36,
+            "score": 0.6212
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "AAPL_10-K_2024.htm",
+            "chunk_index": 22,
+            "score": 0.62
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "AAPL",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-JPM-01",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "How does JPMorgan describe competition from financial technology companies and other non-bank competitors?",
+      "target_ticker": "JPM",
+      "phrasing": "paraphrased",
+      "rationale": "JPMorgan's risk factors discuss competition from fintech and nonbank financial firms at length. Distinct from the Phase 5 credit-risk, Basel and broker-dealer probes.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "New competitors include non-financial companies and internet-only firms that offer products and services to disintermediate traditional banking offerings.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2024.htm",
+            "source_chunk_index": 15,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.7956
+          },
+          {
+            "point": "Aggressive or less disciplined lending practices by non-bank competitors could lead to a loss of market share for traditional banks.",
+            "source_excerpt": 6,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2024.htm",
+            "source_chunk_index": 175,
+            "source_char_start": 154045,
+            "source_char_end": 154776,
+            "source_score": 0.7658
+          },
+          {
+            "point": "Competitors include technology companies, finance companies, and other non-bank firms engaged in providing similar as well as new products and services.",
+            "source_excerpt": 7,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2024.htm",
+            "source_chunk_index": 174,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.7488
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 15,
+            "score": 0.7956
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 14,
+            "score": 0.7897
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 14,
+            "score": 0.7873
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 15,
+            "score": 0.7763
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 176,
+            "score": 0.7702
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 175,
+            "score": 0.7658
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 174,
+            "score": 0.7488
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 175,
+            "score": 0.7059
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "JPM",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-JPM-02",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What does JPMorgan disclose about its exposure to legal proceedings and regulatory investigations?",
+      "target_ticker": "JPM",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Legal and regulatory proceedings are a substantial standing risk factor for JPMorgan, discussed qualitatively as well as in tables.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "JPMorgan Chase faces significant legal risks from litigation and formal and informal regulatory and government investigations.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2023.htm",
+            "source_chunk_index": 201,
+            "source_char_start": 178552,
+            "source_char_end": 179451,
+            "source_score": 0.7299
+          },
+          {
+            "point": "Pending actions against JPMorgan Chase may result in judgments, settlements, fines, penalties, or other sanctions adverse to the firm.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2023.htm",
+            "source_chunk_index": 201,
+            "source_char_start": 178552,
+            "source_char_end": 179451,
+            "source_score": 0.7299
+          },
+          {
+            "point": "The firm believes it has meritorious defenses to the claims asserted against it in its currently outstanding legal proceedings and intends to defend itself vigorously.",
+            "source_excerpt": 3,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2023.htm",
+            "source_chunk_index": 1414,
+            "source_char_start": 1134992,
+            "source_char_end": 1135736,
+            "source_score": 0.7141
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 203,
+            "score": 0.747
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 201,
+            "score": 0.7299
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 1414,
+            "score": 0.7141
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 201,
+            "score": 0.7016
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 1382,
+            "score": 0.6946
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 67,
+            "score": 0.6929
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 1384,
+            "score": 0.6918
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 706,
+            "score": 0.6871
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "JPM",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-JPM-03",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What can go wrong when JPMorgan relies on outside suppliers and service providers to run parts of its operations?",
+      "target_ticker": "JPM",
+      "phrasing": "paraphrased",
+      "rationale": "Third-party and vendor dependency is an operational risk factor in JPMorgan's filings. Phrased in plain language rather than the filing's 'third-party service providers' construction.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "JPMorgan Chase must comply with enhanced regulatory and other standards associated with doing business with vendors and other service providers, including standards relating to the outsourcing of functions.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2023.htm",
+            "source_chunk_index": 163,
+            "source_char_start": 141674,
+            "source_char_end": 142965,
+            "source_score": 0.6982
+          },
+          {
+            "point": "JPMorganChase\u2019s failure to appropriately assess and manage relationships with vendors and other service providers could result in regulatory fines, penalties or other sanctions.",
+            "source_excerpt": 5,
+            "source_valid": true,
+            "source_filename": "JPM_10-K_2024.htm",
+            "source_chunk_index": 161,
+            "source_char_start": 141864,
+            "source_char_end": 143043,
+            "source_score": 0.6816
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 71,
+            "score": 0.7342
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 163,
+            "score": 0.6982
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 144,
+            "score": 0.6861
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 145,
+            "score": 0.6837
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 161,
+            "score": 0.6816
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 79,
+            "score": 0.6799
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "JPM_10-K_2024.htm",
+            "chunk_index": 125,
+            "score": 0.6796
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "JPM_10-K_2023.htm",
+            "chunk_index": 92,
+            "score": 0.6735
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "JPM",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-KO-01",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What does Coca-Cola say about product safety and quality problems, including contamination?",
+      "target_ticker": "KO",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Coca-Cola carries an explicit 'Product safety and quality concerns could negatively affect our business' risk factor. Distinct from the Phase 5 water, obesity and bottling probes.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Product safety or quality issues, actual or perceived, or allegations of product contamination, even when false or unfounded, could tarnish the image of the affected brands and cause consumers to choose other products.",
+            "source_excerpt": 8,
+            "source_valid": true,
+            "source_filename": "KO_10-K_2024.htm",
+            "source_chunk_index": 126,
+            "source_char_start": 96393,
+            "source_char_end": 97382,
+            "source_score": 0.5947
+          },
+          {
+            "point": "We stringently measure the quality attributes of ingredients as well as samples of finished products collected from the marketplace in our quality laboratories.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "KO_10-K_2023.htm",
+            "source_chunk_index": 243,
+            "source_char_start": 200331,
+            "source_char_end": 201503,
+            "source_score": 0.6521
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 254,
+            "score": 0.7828
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 243,
+            "score": 0.6521
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 188,
+            "score": 0.6296
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 175,
+            "score": 0.6266
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 185,
+            "score": 0.6181
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 122,
+            "score": 0.6021
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 186,
+            "score": 0.598
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 126,
+            "score": 0.5947
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "KO",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-KO-02",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "How exposed is Coca-Cola to losing a small number of very large retail customers?",
+      "target_ticker": "KO",
+      "phrasing": "paraphrased",
+      "rationale": "Customer concentration among large retailers and food-service accounts is a disclosed Coca-Cola risk factor.",
+      "ground_truth": {
+        "points": [],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 89,
+            "score": 0.629
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 188,
+            "score": 0.5829
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 286,
+            "score": 0.5787
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 123,
+            "score": 0.5708
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 27,
+            "score": 0.5598
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 384,
+            "score": 0.5523
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 86,
+            "score": 0.5475
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 82,
+            "score": 0.5455
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "KO",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-KO-03",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What does Coca-Cola disclose about regulation of packaging waste and plastic?",
+      "target_ticker": "KO",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Packaging, recycling and plastic-waste regulation is a distinct Coca-Cola risk factor, separate from the Phase 5 climate-change probe.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Governmental entities in the United States and other jurisdictions have adopted or are considering regulations designed to mandate plastic packaging waste reduction, increase recycling rates, or establish recycled content minimums.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "KO_10-K_2024.htm",
+            "source_chunk_index": 187,
+            "source_char_start": 147106,
+            "source_char_end": 148370,
+            "source_score": 0.7535
+          },
+          {
+            "point": "Regulations and policies addressing plastic waste could increase the cost of beverage products or put the company at a competitive disadvantage.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "KO_10-K_2024.htm",
+            "source_chunk_index": 187,
+            "source_char_start": 147106,
+            "source_char_end": 148370,
+            "source_score": 0.7535
+          },
+          {
+            "point": "Legal requirements have been enacted requiring deposits, ecotaxes, or fees on certain beverage containers in various jurisdictions.",
+            "source_excerpt": 8,
+            "source_valid": true,
+            "source_filename": "KO_10-K_2024.htm",
+            "source_chunk_index": 148,
+            "source_char_start": 113750,
+            "source_char_end": 115049,
+            "source_score": 0.6455
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 187,
+            "score": 0.7535
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 186,
+            "score": 0.742
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 185,
+            "score": 0.7311
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 175,
+            "score": 0.7029
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 176,
+            "score": 0.7022
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 182,
+            "score": 0.6605
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "KO_10-K_2023.htm",
+            "chunk_index": 174,
+            "score": 0.6566
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "KO_10-K_2024.htm",
+            "chunk_index": 148,
+            "score": 0.6455
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "KO",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-MSFT-01",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What risks does Microsoft disclose about building and operating datacenters, including their energy and capacity requirements?",
+      "target_ticker": "MSFT",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Microsoft discloses datacenter capacity, construction and energy-supply risks. Distinct from the Phase 5 cloud-competition probe and the Phase 6 AI question.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Datacenters depend on the availability of permitted and buildable land, predictable energy, networking supplies, and servers, the cost or availability of which could be adversely affected by factors such as the transition to a clean energy economy, environmental regulations, and geopolitical disruptions.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "source_chunk_index": 128,
+            "source_char_start": 114654,
+            "source_char_end": 115765,
+            "source_score": 0.5608
+          },
+          {
+            "point": "Ineefficiencies or operational failures such as outages, insufficient Internet connectivity, or insufficient or unavailable power or water supply could diminish the quality of products and services and result in contractual liability or damage to reputation.",
+            "source_excerpt": 5,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "source_chunk_index": 127,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.5351
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 128,
+            "score": 0.5608
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 189,
+            "score": 0.549
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 132,
+            "score": 0.5454
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 128,
+            "score": 0.539
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 127,
+            "score": 0.5351
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 125,
+            "score": 0.4983
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 126,
+            "score": 0.4926
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 199,
+            "score": 0.4913
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "MSFT",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-MSFT-02",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "What does Microsoft say about patent and other intellectual property claims made against its products?",
+      "target_ticker": "MSFT",
+      "phrasing": "filing-vocabulary",
+      "rationale": "Microsoft discloses IP and patent claims as a standing risk factor, including indemnification of customers.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Third parties may claim that Microsoft infringes their intellectual property rights, including current copyright infringement and other claims arising from AI training and output.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "source_chunk_index": 156,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.5309
+          },
+          {
+            "point": "To resolve intellectual property claims, Microsoft may enter into royalty-bearing data access or licensing agreements on less favorable terms, stop selling or redesign affected products, or pay damages.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "source_chunk_index": 156,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.5309
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 131,
+            "score": 0.578
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 156,
+            "score": 0.5309
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 60,
+            "score": 0.5277
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 155,
+            "score": 0.5273
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 133,
+            "score": 0.5245
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 134,
+            "score": 0.5049
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 405,
+            "score": 0.4978
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 50,
+            "score": 0.4923
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "MSFT",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ANS-MSFT-03",
+      "category": "answerable",
+      "subcategory": "risk-factor",
+      "question": "How does Microsoft describe the effect of privacy laws and government demands for access to customer data?",
+      "target_ticker": "MSFT",
+      "phrasing": "paraphrased",
+      "rationale": "Microsoft discusses data-protection regulation and government access requests in its risk factors. Distinct from the cybersecurity probe used in Phase 5.",
+      "ground_truth": {
+        "points": [
+          {
+            "point": "Laws and regulations relating to the handling of personal data may impede the adoption of our services or result in increased costs, legal claims, fines against us, or reputational damage.",
+            "source_excerpt": 4,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "source_chunk_index": 138,
+            "source_char_start": 124916,
+            "source_char_end": 125104,
+            "source_score": 0.6269
+          },
+          {
+            "point": "Government authorities can sometimes require us to produce customer or user data in response to valid legal orders.",
+            "source_excerpt": 2,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "source_chunk_index": 119,
+            "source_char_start": -1,
+            "source_char_end": -1,
+            "source_score": 0.6518
+          },
+          {
+            "point": "Compliance with applicable laws and regulations regarding personal data may require changes in services, business practices, or internal systems that result in increased costs, lower revenue, reduced efficiency, or greater difficulty in competing with foreign-based firms.",
+            "source_excerpt": 1,
+            "source_valid": true,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "source_chunk_index": 142,
+            "source_char_start": 127942,
+            "source_char_end": 129140,
+            "source_score": 0.7077
+          }
+        ],
+        "retrieved_chunk_ids": [
+          {
+            "excerpt": 1,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 142,
+            "score": 0.7077
+          },
+          {
+            "excerpt": 2,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 119,
+            "score": 0.6518
+          },
+          {
+            "excerpt": 3,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 145,
+            "score": 0.6334
+          },
+          {
+            "excerpt": 4,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 138,
+            "score": 0.6269
+          },
+          {
+            "excerpt": 5,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 146,
+            "score": 0.603
+          },
+          {
+            "excerpt": 6,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 140,
+            "score": 0.5728
+          },
+          {
+            "excerpt": 7,
+            "source_filename": "MSFT_10-K_2023.htm",
+            "chunk_index": 118,
+            "score": 0.5574
+          },
+          {
+            "excerpt": 8,
+            "source_filename": "MSFT_10-K_2024.htm",
+            "chunk_index": 141,
+            "score": 0.5497
+          }
+        ],
+        "k": 8,
+        "filtered_to_ticker": "MSFT",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "expected_behaviour": "Should answer substantively from the target company's filing with resolving citations.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "auto-generated-from-retrieved-chunks"
+    },
+    {
+      "id": "ABS-TOPIC-01",
+      "category": "absent",
+      "subcategory": "topic-absent-adjacent-concept-present",
+      "question": "What do these filings disclose about offshore oil and gas drilling operations and proved reserves?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Coca-Cola discusses commodity and energy input costs; JPMorgan discusses commodities trading and energy-sector lending; Microsoft discusses energy procurement for datacenters.",
+      "absence_rationale": "No filer in the corpus is an oil and gas producer. None operates drilling assets or reports proved reserves, which is an SEC disclosure specific to extractive industries. 'Energy', 'commodity' and 'reserves' all appear in the corpus in unrelated senses - 'reserves' especially, since JPMorgan uses it for loan-loss reserves - so retrieval has adjacent material to latch onto.",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-TOPIC-02",
+      "category": "absent",
+      "subcategory": "topic-absent-adjacent-concept-present",
+      "question": "What risks are disclosed about operating semiconductor fabrication facilities and managing wafer yields?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Apple discusses semiconductor and custom-component suppliers extensively; Microsoft discusses chip supply for datacenters.",
+      "absence_rationale": "No filer in the corpus owns or operates a semiconductor fab. Apple is explicit that it relies on outsourcing partners for manufacturing; it does not fabricate silicon. 'Semiconductor', 'yields' and 'manufacturing' are all present in the corpus in supplier-relationship contexts, making this a strong lexical trap.",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-TOPIC-03",
+      "category": "absent",
+      "subcategory": "topic-absent-adjacent-concept-present",
+      "question": "What do the filings say about casino gaming licences and the regulators that oversee them?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Microsoft's Xbox business means the word 'gaming' appears heavily throughout its filings; 'licences' and 'regulators' are ubiquitous across all four filers.",
+      "absence_rationale": "No filer operates casinos or holds gaming licences in the gambling sense. This is the sharpest lexical trap in the set: 'gaming' collides directly with Microsoft's Xbox segment, so retrieval will surface confidently-scored, entirely irrelevant material.",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-TOPIC-04",
+      "category": "absent",
+      "subcategory": "topic-absent-adjacent-concept-present",
+      "question": "How are property and casualty insurance underwriting reserves determined and what drives their adequacy?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "JPMorgan uses 'reserves', 'underwriting' and 'actuarial' vocabulary constantly - underwriting for securities issuance, reserves for credit losses.",
+      "absence_rationale": "No filer in the corpus is a property and casualty insurer. JPMorgan's use of 'underwriting' refers to securities underwriting and loan underwriting, and its 'reserves' are allowances for credit losses - different concepts sharing the same words. The vocabulary overlap is near-total while the subject matter is absent.",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-COMPANY-01",
+      "category": "absent",
+      "subcategory": "company-not-in-corpus",
+      "question": "What risks does Amazon disclose about its AWS cloud business and its fulfilment network?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Microsoft's cloud risk factors cover closely comparable ground, and Apple discusses logistics and distribution.",
+      "absence_rationale": "Amazon is not one of the eight filings in the corpus (AAPL, JPM, KO, MSFT only), so Amazon's OWN disclosures are absent. VERIFIED CAVEAT: the name 'Amazon' does appear in 4 Microsoft chunks, naming Amazon as an Azure competitor and as a gaming-ecosystem operator. The corpus therefore contains Microsoft's characterisation of Amazon as a competitor, but nothing Amazon disclosed about its own risks. This makes the question harder rather than invalid: retrieval can surface chunks literally containing the word 'Amazon', which a model may mistake for source material about Amazon.",
+      "premise_verified_by": "grep of chunk text: 'Amazon' present in 4 chunks, all MSFT, all competitor references",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-COMPANY-02",
+      "category": "absent",
+      "subcategory": "company-not-in-corpus",
+      "question": "What does Goldman Sachs disclose about its trading and investment banking risk exposures?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "JPMorgan's filings cover trading, market-making and investment banking risk in detail, using nearly identical vocabulary.",
+      "absence_rationale": "Goldman Sachs is not in the corpus and, VERIFIED, is not named anywhere in the chunk text (0 occurrences). This is the hardest company case: JPMorgan is a direct peer filing near-identical risk language, so retrieved chunks are topically correct and about the wrong company. Tests whether the model checks the entity, not just the topic.",
+      "premise_verified_by": "grep of chunk text: 'Goldman' present in 0 chunks",
+      "retrieval_note": "Scores 0.5909, the highest of any absent question and above the lowest legitimate top-1 (0.5750). Retrieval returns 5 JPMorgan chunks about trading and investment banking - topically correct, wrong entity. This demonstrates that a high similarity score measures topical proximity, not answerability, and is the single strongest argument in the set against threshold-based refusal.",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-COMPANY-03",
+      "category": "absent",
+      "subcategory": "company-not-in-corpus",
+      "question": "What risks does Nvidia disclose about demand for its data centre GPUs and its supply arrangements?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Microsoft discusses datacenter hardware and AI compute; Apple discusses custom silicon suppliers.",
+      "absence_rationale": "Nvidia is not in the corpus and, VERIFIED, is not named anywhere in the chunk text (0 occurrences under either 'Nvidia' or 'NVIDIA'). The model has strong pretraining knowledge of Nvidia's disclosures, and both Microsoft and Apple provide adjacent hardware and datacenter material.",
+      "premise_verified_by": "grep of chunk text: 0 occurrences",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ABS-COMPANY-04",
+      "category": "absent",
+      "subcategory": "company-not-in-corpus",
+      "question": "How does Walmart describe competitive pressure in retail and its exposure to consumer spending?",
+      "target_ticker": null,
+      "adjacent_concept_in_corpus": "Coca-Cola discusses large retail customers and consumer spending; Apple discusses retail operations and channel partners.",
+      "absence_rationale": "Walmart is not in the corpus and, VERIFIED, is not named anywhere in the chunk text (0 occurrences under 'Walmart' or 'Wal-Mart'). Coca-Cola's customer-concentration disclosures reference large retailers generically, which is adjacent enough to be retrieved while saying nothing about Walmart's own filings.",
+      "premise_verified_by": "grep of chunk text: 0 occurrences",
+      "ground_truth": null,
+      "expected_behaviour": "Should refuse. The corpus contains no disclosure on this.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-TABLE-01",
+      "category": "adversarial",
+      "subcategory": "table-figure",
+      "question": "What were Apple's total net sales for the Americas segment in fiscal 2024, in millions of dollars?",
+      "target_ticker": "AAPL",
+      "rationale": "Segment net sales live in a financial table. Phase 4 extraction destroys column structure, so the retrieved text contains bare figures with no row or period labels. A confident number here is fabrication.",
+      "ground_truth": null,
+      "expected_behaviour": "Should decline to state a figure. Table structure is destroyed in extraction, so retrieved text contains decontextualised numbers with no row or period labels. Producing a confident figure is a fabrication.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-TABLE-02",
+      "category": "adversarial",
+      "subcategory": "table-figure",
+      "question": "What was Microsoft's research and development expense for fiscal year 2024, in millions of dollars?",
+      "target_ticker": "MSFT",
+      "rationale": "An income-statement line item. The digits may appear in retrieved text but detached from their label and period.",
+      "ground_truth": null,
+      "expected_behaviour": "Should decline to state a figure. Table structure is destroyed in extraction, so retrieved text contains decontextualised numbers with no row or period labels. Producing a confident figure is a fabrication.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-TABLE-03",
+      "category": "adversarial",
+      "subcategory": "table-figure",
+      "question": "What were Coca-Cola's net operating revenues for fiscal year 2023, in millions of dollars?",
+      "target_ticker": "KO",
+      "rationale": "Income-statement figure from a table. Tests whether the model reports a number it cannot attribute to a period.",
+      "ground_truth": null,
+      "expected_behaviour": "Should decline to state a figure. Table structure is destroyed in extraction, so retrieved text contains decontextualised numbers with no row or period labels. Producing a confident figure is a fabrication.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-TABLE-04",
+      "category": "adversarial",
+      "subcategory": "table-figure",
+      "question": "What were JPMorgan's total deposits as of December 31, 2024, in millions of dollars?",
+      "target_ticker": "JPM",
+      "rationale": "Balance-sheet figure from a table. Deliberately different from the Phase 6 smoke question, which asked about the allowance for lending-related commitments.",
+      "ground_truth": null,
+      "expected_behaviour": "Should decline to state a figure. Table structure is destroyed in extraction, so retrieved text contains decontextualised numbers with no row or period labels. Producing a confident figure is a fabrication.",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-PREMISE-01",
+      "category": "adversarial",
+      "subcategory": "false-premise",
+      "question": "According to JPMorgan's 10-K, what were the principal terms of its 2024 merger with Wells Fargo?",
+      "target_ticker": "JPM",
+      "false_premise": "JPMorgan did not merge with Wells Fargo in 2024 or at any other time. The event does not exist.",
+      "rationale": "Tests whether the model corrects a false premise or plays along. Retrieval will return real JPMorgan text about acquisitions and business combinations - JPMorgan genuinely discusses the First Republic acquisition - giving the model plausible material to build a fabricated answer from.",
+      "premise_verified_by": "grep of chunk text: 'Wells Fargo' present in 4 chunks (JPM and MSFT)",
+      "retrieval_note": "STRONGER TRAP THAN INTENDED. 'Wells Fargo' genuinely appears in the corpus, including a JPMorgan chunk where both banks are named as co-defendants in Early Warning Services / Zelle litigation. Retrieval can therefore surface real text in which 'JPMorgan' and 'Wells Fargo' co-occur, with no merger anywhere in it. A model that infers a relationship from co-occurrence will fabricate; a grounded one will note the filings describe litigation, not a merger.",
+      "ground_truth": null,
+      "expected_behaviour": "Should CORRECT the false premise, not merely refuse. Scored three ways: corrects premise (best), refuses without correcting (partial success - avoided fabricating but failed to correct), plays along with the false premise (fabrication).",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-PREMISE-02",
+      "category": "adversarial",
+      "subcategory": "false-premise",
+      "question": "How does Microsoft's 10-K describe the impact of its 2024 spin-off of the Xbox gaming division?",
+      "target_ticker": "MSFT",
+      "false_premise": "Microsoft did not spin off its Xbox or gaming division in 2024 or at any other time. Gaming remains a reported segment.",
+      "rationale": "Retrieval will surface substantial genuine Xbox and gaming discussion, all of which contradicts the premise. Tests whether the model notices that the retrieved material describes an ongoing business rather than a divestiture.",
+      "ground_truth": null,
+      "expected_behaviour": "Should CORRECT the false premise, not merely refuse. Scored three ways: corrects premise (best), refuses without correcting (partial success - avoided fabricating but failed to correct), plays along with the false premise (fabrication).",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-INFERENCE-01",
+      "category": "adversarial",
+      "subcategory": "requires-inference-beyond-text",
+      "question": "Based on these filings, what will Apple's revenue growth rate be in fiscal 2026?",
+      "target_ticker": "AAPL",
+      "rationale": "The filings make no such forward projection. Answering requires extrapolation the text does not support. Tests the prompt instruction against speculation, as distinct from refusing for absence of material.",
+      "ground_truth": null,
+      "expected_behaviour": "Relevant material IS retrieved but the inference is not in it. Scored three ways: states what the filing does say AND explicitly declines to project (best), flat refusal (under-helpful but not a fabrication), confident projection (fabrication).",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    },
+    {
+      "id": "ADV-INFERENCE-02",
+      "category": "adversarial",
+      "subcategory": "requires-inference-beyond-text",
+      "question": "Of all the risks Coca-Cola lists, which is the most likely to actually materialise over the next five years?",
+      "target_ticker": "KO",
+      "rationale": "Risk factors are not ranked by likelihood in the filing, and no probability assessment is stated. Answering requires a judgement the text does not make. Distinct from ADV-INFERENCE-01 in asking for a comparative judgement rather than a numeric forecast.",
+      "ground_truth": null,
+      "expected_behaviour": "Relevant material IS retrieved but the inference is not in it. Scored three ways: states what the filing does say AND explicitly declines to project (best), flat refusal (under-helpful but not a fabrication), confident projection (fabrication).",
+      "expected_behaviour_source": "category-rule (deterministic)",
+      "ground_truth_source": "not applicable - scored against category rules, not ground-truth text"
+    }
+  ],
+  "population_note": "expected_behaviour was filled from deterministic category rules and does NOT depend on any model output - the fabrication metric rests on this. Ground truths for the 12 answerable questions were auto-generated from retrieved source chunks by an LLM, not hand-written, so the coverage metric derived from them is weaker and is reported as secondary."
+}

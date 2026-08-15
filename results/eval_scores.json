@@ -1,0 +1,138 @@
+{
+  "phase": "7-eval-scores",
+  "pinned_model": "gemini-3.5-flash-lite",
+  "model_parity_verified": true,
+  "prompt_version": "v1",
+  "judge_model": "gemini-3.5-flash-lite",
+  "question_count": 28,
+  "metric_strength": {
+    "fabrication": "STRONG. Rests on category-defined expected behaviour fixed before any model output existed. Does not depend on generated ground truth. This is the headline metric.",
+    "refusal": "MODERATE. Uses the refusal judge validated against 12 hand labels in Phase 6 (binary agreement 12/12, kappa 1.0). That validation was on Phase 6 answers, not these.",
+    "grounding": "WEAK. LLM judge, not human-validated. See eval_spotcheck.csv.",
+    "coverage": "WEAKEST. Depends on auto-generated ground-truth points AND an unvalidated LLM judge. Secondary metric only. One question (ANS-KO-02) produced zero ground-truth points despite relevant material being retrieved, which is itself evidence of the weakness."
+  },
+  "not_yet_validated": "The Phase 7 scoring judges have NOT been validated against human labels. results/eval_spotcheck.csv is a blind 10-row sample provided for that purpose and has not been labelled.",
+  "arms": {
+    "with_context": {
+      "answered_calls": 28,
+      "failed_calls": 0,
+      "failed_ids": [],
+      "refusal": {
+        "refused": 16,
+        "n": 28,
+        "per_category": {
+          "answerable": {
+            "n": 12,
+            "refused": 3,
+            "refusal_rate": 0.25,
+            "fabricated": 0
+          },
+          "absent": {
+            "n": 8,
+            "refused": 8,
+            "refusal_rate": 1.0,
+            "fabricated": 0
+          },
+          "adversarial": {
+            "n": 8,
+            "refused": 5,
+            "refusal_rate": 0.625,
+            "fabricated": 3
+          }
+        }
+      },
+      "fabrication": {
+        "count": 3,
+        "n": 16,
+        "rate": 0.1875,
+        "fabricated_ids": [
+          "ADV-TABLE-01",
+          "ADV-TABLE-02",
+          "ADV-TABLE-04"
+        ]
+      },
+      "grounding": {
+        "n": 12,
+        "verdicts": {
+          "GROUNDED": 10,
+          "PARTIALLY_GROUNDED": 1,
+          "UNGROUNDED": 1
+        },
+        "cites_wrong_company": 0,
+        "wrong_company_ids": []
+      },
+      "coverage": {
+        "points_covered": 18,
+        "points_total": 26,
+        "rate": 0.6923
+      },
+      "invalid_citations": 0
+    },
+    "no_context": {
+      "answered_calls": 28,
+      "failed_calls": 0,
+      "failed_ids": [],
+      "refusal": {
+        "refused": 4,
+        "n": 28,
+        "per_category": {
+          "answerable": {
+            "n": 12,
+            "refused": 0,
+            "refusal_rate": 0.0,
+            "fabricated": 0
+          },
+          "absent": {
+            "n": 8,
+            "refused": 1,
+            "refusal_rate": 0.125,
+            "fabricated": 7
+          },
+          "adversarial": {
+            "n": 8,
+            "refused": 3,
+            "refusal_rate": 0.375,
+            "fabricated": 4
+          }
+        }
+      },
+      "fabrication": {
+        "count": 11,
+        "n": 16,
+        "rate": 0.6875,
+        "fabricated_ids": [
+          "ABS-TOPIC-02",
+          "ABS-TOPIC-03",
+          "ABS-TOPIC-04",
+          "ABS-COMPANY-01",
+          "ABS-COMPANY-02",
+          "ABS-COMPANY-03",
+          "ABS-COMPANY-04",
+          "ADV-TABLE-01",
+          "ADV-TABLE-02",
+          "ADV-TABLE-03",
+          "ADV-TABLE-04"
+        ]
+      },
+      "grounding": {
+        "n": 12,
+        "verdicts": {},
+        "cites_wrong_company": 0,
+        "wrong_company_ids": []
+      },
+      "coverage": {
+        "points_covered": 18,
+        "points_total": 26,
+        "rate": 0.6923
+      },
+      "invalid_citations": 0
+    }
+  },
+  "headline": {
+    "fabrication_with_context": 3,
+    "fabrication_without_context": 11,
+    "fabrication_pool": 16,
+    "delta": 8,
+    "statement": "Fabrication on the 16 absent + adversarial questions: 3/16 with retrieval vs 11/16 without."
+  }
+}
